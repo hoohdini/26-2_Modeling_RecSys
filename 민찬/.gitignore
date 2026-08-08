@@ -1,0 +1,33 @@
+# 민찬 폴더에서 저장소에 올리지 않는 것들
+# (문서·스크립트만 올리고, 용량이 크거나 다시 만들 수 있는 건 제외합니다)
+
+# 데이터 4.4GB — README의 구글 드라이브 링크에서 각자 내려받으세요
+data/
+
+# 외부 저장소 — 각자 clone 하세요. 우리가 고친 부분은 patches/ 에 있습니다
+code/
+
+# 중간 산출물 — scripts/ 로 언제든 다시 만듭니다
+work/
+
+# 학습 산출물
+logs/
+outputs/
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+wandb/
+*.tfrecord.gz
+*.zip
+
+# 파이썬
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# 에이전트 툴링 상태 (프로젝트 내용 아님)
+.omc/

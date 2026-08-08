@@ -1,0 +1,81 @@
+diff --git a/src/utils/file_utils.py b/src/utils/file_utils.py
+index 8d52078..f784e52 100755
+--- a/src/utils/file_utils.py
++++ b/src/utils/file_utils.py
+@@ -37,6 +37,12 @@ def file_exists_local_or_remote(file_path: str) -> bool:
+ @retry()
+ def open_local_or_remote(file_path: str, mode: str = "r") -> BinaryIO:
+     fs, _ = url_to_fs(file_path)
++    # Hydra creates a fresh timestamped output dir per run, so write targets such as
++    # metadata/ and checkpoints/ do not exist yet. fs.open does not create them.
++    if any(m in mode for m in ("w", "a", "x")):
++        parent = os.path.dirname(file_path)
++        if parent:
++            fs.makedirs(parent, exist_ok=True)
+     return fs.open(file_path, mode)
+ 
+ 
+diff --git a/src/utils/inference_utils.py b/src/utils/inference_utils.py
+index cbde1c3..04d7c90 100755
+--- a/src/utils/inference_utils.py
++++ b/src/utils/inference_utils.py
+@@ -19,6 +19,16 @@ from src.utils.tensor_utils import merge_list_of_keyed_tensors_to_single_tensor
+ log = logging.getLogger(__name__)
+ 
+ 
++def _distributed_is_active() -> bool:
++    """랭크 간 동기화가 실제로 가능한 상태인지 확인한다.
++
++    원래 코드는 `trainer.global_rank != None` 으로 검사했는데, 단일 프로세스에서도
++    global_rank 가 0 이라 항상 참이 되어 barrier() 를 호출하고 죽었다.
++    프로세스 그룹이 초기화된 경우에만 동기화해야 한다.
++    """
++    return torch.distributed.is_available() and torch.distributed.is_initialized()
++
++
+ class BaseBufferedWriter(BasePredictionWriter):
+     def __init__(
+         self,
+@@ -233,14 +243,14 @@ class LocalPickleWriter(BaseBufferedWriter):
+         if self.should_merge_files_on_main:
+             # if we use multiple workers, we need to wait for all of them to finish writing
+             # before merging the files
+-            if trainer.global_rank != None:
++            if _distributed_is_active():
+                 torch.distributed.barrier()
+             if self.global_rank == 0:
+                 log.info("Merging pickle files on main process.")
+                 self._merge_files()
+ 
+             # other processes can continue after merging
+-            if trainer.global_rank != None:
++            if _distributed_is_active():
+                 torch.distributed.barrier()
+ 
+         # conducting post-processing functions on the files
+@@ -253,7 +263,7 @@ class LocalPickleWriter(BaseBufferedWriter):
+                         process_func["function"](file_path)
+                 else:
+                     process_func["function"](file_path)
+-                if trainer.global_rank != None:
++                if _distributed_is_active():
+                     torch.distributed.barrier()
+ 
+     def _merge_files(self):
+diff --git a/src/utils/launcher_utils.py b/src/utils/launcher_utils.py
+index 0a9322f..db9bd0f 100755
+--- a/src/utils/launcher_utils.py
++++ b/src/utils/launcher_utils.py
+@@ -22,8 +22,12 @@ from src.utils.file_utils import (
+ )
+ from src.utils.logging_utils import finalize_loggers
+ from src.utils.restart_job_utils import get_attribute_from_metadata_file
++from src.utils.torch_compat import allow_full_unpickling
+ from src.utils.utils import has_class_object_inside_list
+ 
++# train.py 와 inference.py 가 모두 이 모듈을 거치므로 여기서 한 번만 적용한다.
++allow_full_unpickling()
++
+ command_line_logger = RankedLogger(__name__, rank_zero_only=True)
+ 
+ 
