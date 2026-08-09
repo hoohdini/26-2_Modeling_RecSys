@@ -39,14 +39,22 @@ cp patches/torch_compat.py code/grid/src/utils/
 │   ├── 05_환경구축.md               설치 절차
 │   ├── 06_코드데이터_분석.md         GRID/Ghost 코드·데이터 실측
 │   ├── 07_진행상황.md               체크리스트
-│   └── 08_파이프라인_완주기록.md      ⭐ 실행 함정 10개 + 실측치
+│   ├── 08_파이프라인_완주기록.md      ⭐ 실행 함정 10개 + 실측치
+│   ├── 09_팀공유_전달문.md            복사해서 바로 보낼 수 있는 공유 내용
+│   ├── 10_층수_충돌률_결과.md         ⭐ 첫 실험 결과 (16회 실행)
+│   └── 11_COLD_구간_데이터셋.md       ⭐ 신규 아이템 구간을 만든 방법과 한계
 ├── scripts/
 │   ├── grid_mac.sh                  맥(MPS)에서 GRID 실행하는 래퍼
 │   ├── build_step2_embeddings.py    Step 2(3GB 모델) 건너뛰기
 │   ├── item_segments.py             HEAD/BODY/TAIL 분류
-│   └── segment_eval.py              ⭐ 구간별 평가 — 팀 공통 자
+│   ├── segment_eval.py              ⭐ 구간별 평가 — 팀 공통 자
+│   ├── sweep_layers.py              층 수 × 충돌률 스윕
+│   ├── plot_layer_sweep.py          스윕 결과 그림
+│   ├── cold_split.py                신규 아이템(COLD) 데이터셋 생성
 ├── tests/
-│   └── test_segment_eval.py         지표 계산 검증
+│   ├── test_segment_eval.py         지표 계산 검증 (신뢰구간·짝지은 검정 포함)
+│   ├── test_cold_split.py           COLD 자르기 로직 검증 (임베딩 정렬 포함)
+│   └── test_cold_dataset_loads.py   만든 데이터셋이 GRID 파서를 통과하는지
 ├── patches/                      code/grid 는 git 제외라 수정분을 여기 보존
 ├── code/
 │   ├── grid/                     ⭐ Snap Research GRID — 우리 베이스

@@ -10,17 +10,23 @@
     Ghost 는 누적 상호작용 80% 기준을 쓴다. 기준이 다르면 숫자가 안 맞으므로
     비교할 때 어느 기준인지 반드시 밝혀야 한다.
 
-COLD 는 여기서 만들지 않는다
-    이 데이터는 leave-one-out 분할이라 모든 아이템이 학습에 등장한다.
-    즉 정의상 COLD(학습에 없는 신규 아이템)가 존재할 수 없다.
-    다만 실제로 학습 시퀀스에 한 번도 안 나오는 아이템은 생길 수 있어서
-    UNSEEN 이라는 별도 구간으로 분리해 보고한다. COLD 와 혼동하면 안 된다.
-    진짜 COLD 실험은 시간 기준 분할이 따로 필요하다.
+COLD 와 UNSEEN 은 다르다
+    UNSEEN  우연히 학습에 안 나온 아이템. 원본 데이터에는 33개(0.3%)뿐이라
+            통계를 낼 수 없다. leave-one-out 이 시퀀스 끝 2개를 떼면서 생긴 부산물이다.
+    COLD    일부러 학습에서 빼낸 아이템. scripts/cold_split.py 가 만든다.
+            --cold-items 로 그 목록을 주면 여기서 COLD 로 표시한다.
+    둘을 섞으면 "신규 아이템 성능"이 33개짜리 잡음이 된다. 반드시 구분한다.
 
 사용:
     python scripts/item_segments.py \
         --data-dir data/amazon_data/beauty \
         --out work/segments/beauty.json
+
+    # COLD 데이터셋에 대해
+    python scripts/item_segments.py \
+        --data-dir work/cold/beauty_strat10 \
+        --cold-items work/cold/beauty_strat10/cold_items.json \
+        --out work/segments/beauty_strat10.json
 """
 
 import argparse
@@ -32,7 +38,7 @@ from collections import Counter
 import numpy as np
 import tensorflow as tf
 
-SEGMENT_ORDER = ["HEAD", "BODY", "TAIL", "UNSEEN"]
+SEGMENT_ORDER = ["HEAD", "BODY", "TAIL", "COLD", "UNSEEN"]
 # HEAD 상위 20%, BODY 중간 60%, TAIL 하위 20%
 HEAD_FRACTION = 0.2
 TAIL_FRACTION = 0.2
@@ -63,8 +69,14 @@ def count_items(items_dir: str) -> int:
     return total
 
 
-def assign_segments(counts: Counter, n_items: int) -> dict:
-    """아이템 id → 구간 이름."""
+def assign_segments(counts: Counter, n_items: int, cold: set[int] | None = None) -> dict:
+    """아이템 id → 구간 이름.
+
+    cold 로 준 아이템은 학습 등장 횟수와 무관하게 COLD 로 표시한다.
+    (cold_split.py 를 거쳤다면 등장 횟수는 이미 0이다. 0이 아니면 데이터가
+    잘못 만들어진 것이므로 아래에서 걸러 알려 준다.)
+    """
+    cold = cold or set()
     # 학습에 한 번도 안 나온 아이템은 인기 순위를 매길 수 없으므로 먼저 뺀다.
     seen = np.array([i for i in range(n_items) if counts.get(i, 0) > 0], dtype=np.int64)
     unseen = [i for i in range(n_items) if counts.get(i, 0) == 0]
@@ -88,6 +100,8 @@ def assign_segments(counts: Counter, n_items: int) -> dict:
             segments[int(item_id)] = "TAIL"
     for item_id in unseen:
         segments[int(item_id)] = "UNSEEN"
+    for item_id in cold:
+        segments[int(item_id)] = "COLD"
     return segments
 
 
@@ -123,11 +137,31 @@ def main() -> None:
         default="training",
         help="인기도를 셀 split. 기본 training (평가 대상 정보가 새면 안 되므로)",
     )
+    parser.add_argument(
+        "--cold-items",
+        default=None,
+        help="cold_split.py 가 만든 cold_items.json. 주면 그 아이템들을 COLD 로 표시한다",
+    )
     args = parser.parse_args()
+
+    cold = set()
+    if args.cold_items:
+        with open(args.cold_items) as f:
+            cold = {int(i) for i in json.load(f)["cold_items"]}
 
     counts = count_interactions(os.path.join(args.data_dir, args.popularity_split))
     n_items = count_items(os.path.join(args.data_dir, "items"))
-    segments = assign_segments(counts, n_items)
+
+    # COLD 인데 학습에 등장한다면 데이터셋이 잘못 만들어진 것이다. 조용히 넘기면 안 된다.
+    leaked = sorted(i for i in cold if counts.get(i, 0) > 0)
+    if leaked:
+        raise SystemExit(
+            f"❌ COLD 로 지정된 아이템 {len(leaked)}개가 {args.popularity_split} 에 등장합니다.\n"
+            f"   예: {leaked[:10]}\n"
+            f"   --data-dir 가 cold_split.py 의 출력이 맞는지 확인하세요."
+        )
+
+    segments = assign_segments(counts, n_items, cold)
     rows = summarize(segments, counts)
 
     print(f"카탈로그 아이템 {n_items}개 · 학습 상호작용 {sum(counts.values())}건")
@@ -148,6 +182,8 @@ def main() -> None:
                 "head_fraction": HEAD_FRACTION,
                 "tail_fraction": TAIL_FRACTION,
                 "n_items": n_items,
+                "cold_items_file": args.cold_items,
+                "n_cold_items": len(cold),
                 "summary": rows,
                 # json 키는 문자열이어야 해서 아이템 id 를 문자열로 저장한다.
                 "segments": {str(k): v for k, v in sorted(segments.items())},

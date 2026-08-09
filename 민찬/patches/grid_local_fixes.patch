@@ -1,3 +1,51 @@
+diff --git a/src/data/loading/components/iterators.py b/src/data/loading/components/iterators.py
+index f713b32..dd573da 100755
+--- a/src/data/loading/components/iterators.py
++++ b/src/data/loading/components/iterators.py
+@@ -32,6 +32,9 @@ class RawDataIterator(ABC):
+     ):
+         self.list_of_file_paths = None
+         self.should_shuffle_rows = None
++        # 행 셔플에 쓸 시드. shuffle() 이 호출될 때 채워진다.
++        # 이게 없으면 tf.data 가 매 실행 무작위 시드를 써서 학습이 재현되지 않는다.
++        self.shuffle_seed = None
+ 
+     def update_list_of_file_paths(self, list_of_file_paths: List[str]):
+         self.list_of_file_paths = list_of_file_paths
+@@ -95,6 +98,7 @@ class ParquetDataIterator(RawDataIterator):
+                     yield batch
+ 
+     def shuffle(self, seed=42) -> RawDataIterator:
++        self.shuffle_seed = seed
+         random.seed(seed)
+         random.shuffle(self.list_of_file_paths)  # type: ignore
+         return self
+@@ -147,7 +151,7 @@ class TFRecordIterator(RawDataIterator):
+             # the buffer here is the number of records to shuffle
+             # the larger the buffer, the more memory it will use
+             # too large might cause OOM
+-            raw_dataset = raw_dataset.shuffle(buffer_size=128)
++            raw_dataset = raw_dataset.shuffle(buffer_size=128, seed=self.shuffle_seed)
+ 
+         self.initialize_feature_description(raw_dataset)
+         # We create an iterator and manually iterate to allow for retrying the
+@@ -169,7 +173,7 @@ class TFRecordIterator(RawDataIterator):
+             # the buffer here is the number of records to shuffle
+             # the larger the buffer, the more memory it will use
+             # too large might cause OOM
+-            raw_dataset = raw_dataset.shuffle(buffer_size=128)
++            raw_dataset = raw_dataset.shuffle(buffer_size=128, seed=self.shuffle_seed)
+ 
+         self.initialize_feature_description(raw_dataset)
+         # to avoid the issues with tf record warnings, we drop the last instances
+@@ -220,6 +224,7 @@ class TFRecordIterator(RawDataIterator):
+     def shuffle(self, seed=42) -> RawDataIterator:
+         # TODO(lneves): Unify the shuffle method for all iterators
+         # Currently this one shuffles only files, parquet shuffles rows.
++        self.shuffle_seed = seed
+         random.seed(seed)
+         random.shuffle(self.list_of_file_paths)  # type: ignore
+         return self
 diff --git a/src/utils/file_utils.py b/src/utils/file_utils.py
 index 8d52078..f784e52 100755
 --- a/src/utils/file_utils.py
