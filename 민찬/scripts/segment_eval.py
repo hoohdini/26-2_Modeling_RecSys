@@ -303,7 +303,7 @@ def evaluate(
 
     # 층별 정보량. 코드워드를 몇 개 썼는지로는 붕괴가 안 잡힌다.
     # 256개를 다 쓰더라도 그중 하나가 대부분을 삼키면 그 층은 아무것도 구분하지 못한다.
-    # 실제로 실행의 20% 정도에서 일어난다 — docs/10_층수_충돌률_결과.md 참고.
+    # 실제로 실행의 20% 정도에서 일어난다 — docs/09_층수_충돌률_결과.md 참고.
     level_bits = [level_entropy(sid_map[:, d]) for d in range(n_digits - 1)]
     collapsed = [d for d, b in enumerate(level_bits) if b < COLLAPSE_BITS]
 
@@ -410,7 +410,7 @@ def render(result: dict) -> str:
         )
         lines.append(
             "   코드북 학습(Step 3)을 다시 돌리세요. 실행의 20% 정도에서 일어납니다 "
-            "— docs/10_층수_충돌률_결과.md"
+            "— docs/09_층수_충돌률_결과.md"
         )
     if d["users_without_prediction"]:
         lines.append(f"⚠️ 추천 결과가 없는 유저 {d['users_without_prediction']:,}명은 제외했습니다")

@@ -188,7 +188,7 @@ newest(root, glob, experiment="rkmeans_train_flat", since=시작시각)
    experiment  .hydra/overrides.yaml 에 그 experiment 가 적힌 실행만
 ```
 
-> **팀 공유 필요:** GRID 산출물을 타임스탬프로 찾는 코드를 쓰신다면 같은 문제가 있습니다.
+> GRID 산출물을 타임스탬프로 찾는 코드는 같은 문제를 갖습니다.
 > 맥 한 대에서 실험 두 개를 겹쳐 돌리지 마시거나, 위처럼 걸러 주세요.
 
 ---

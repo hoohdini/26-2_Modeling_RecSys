@@ -122,7 +122,7 @@ def level_entropy(column: np.ndarray) -> float:
 
     코드워드를 몇 개 "썼는가"로는 부족하다. 256개를 다 쓰더라도 그중 하나가
     대부분을 삼키면 그 층은 사실상 아무것도 구분하지 못한다.
-    실제로 그런 일이 일어난다 — docs/10_층수_충돌률_결과.md 참고.
+    실제로 그런 일이 일어난다 — docs/09_층수_충돌률_결과.md 참고.
     그래서 쏠림까지 반영하는 엔트로피로 잰다.
     고르게 쓰면 log2(256)=8비트, 한 곳에 몰리면 0비트에 가깝다.
     """
@@ -148,8 +148,9 @@ def collision_stats(sids: np.ndarray, segments: dict) -> dict:
         "max_group_size": int(counts.max()),
         "codebook_used": [int(len(np.unique(sids[:, d]))) for d in range(sids.shape[1] - 1)],
         "level_bits": [round(b, 2) for b in bits],
-        # 층 수보다 이 값이 충돌률을 훨씬 잘 설명한다
-        # (16회 실행 실측 스피어만: 유효비트 -0.96 vs 층 수 -0.75)
+        # 코드북이 정상이면 유효비트 ≈ L × 7.4 라 층 수와 거의 같은 값이다
+        # (패치 후 18회 실측 스피어만: 유효비트 -0.986 vs 층 수 -0.988, 사실상 동률).
+        # 그래도 기록하는 이유는 둘이 갈라지는 순간이 곧 "무너진 실행"이기 때문이다.
         "effective_bits": round(sum(bits), 2),
         "n_collapsed_levels": sum(1 for b in bits if b < COLLAPSE_BITS),
         "dedup_digits_needed": int(sids[:, -1].max()) + 1,
@@ -199,9 +200,9 @@ def render(results: list[dict]) -> str:
     lines += [
         f"  ✗ = {COLLAPSE_BITS}비트 미만 = 무너진 층. 자리는 차지하지만 아이템을 구분하지 못한다.",
         "",
-        "🚨 충돌률은 L 이 아니라 유효비트를 따라간다.",
-        "   층을 늘려도 그 층이 무너지면 SID 공간은 넓어지지 않는다.",
-        "   층 수 실험 결과를 읽을 때 유효비트를 같이 보지 않으면 해석이 뒤집힌다.",
+        "🚨 층 수만 보지 말고 유효비트를 같이 보라.",
+        "   코드북이 정상이면 둘은 거의 같은 값이지만, 층이 무너지면 갈라진다.",
+        "   L=6 인데 유효비트가 L=2 수준인 실행이 실제로 나왔다 (충돌률도 비슷했다).",
     ]
     return "\n".join(lines)
 
