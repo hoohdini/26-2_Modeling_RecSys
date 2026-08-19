@@ -1,0 +1,25 @@
+﻿파일,행 수,열 수,크기(MB),내용
+dataset\A_items.csv,12101,6,7.29,"아이템 12,101개 마스터 (ASIN·판매순위·GRID 입력 텍스트). 임베딩 행 순서와 동일"
+dataset\A_users.csv,22363,6,1.46,"유저 22,363명: train 시퀀스(공백 구분)·val/test 정답 아이템"
+dataset\A_interactions_long.csv,183348,4,3.56,Split A 상호작용 롱포맷 (유저·순번·아이템·split). 피벗/집계용
+dataset\B_windows_summary.csv,3,12,0.0,W3/W4/W5 윈도우별 규모 요약 ★ 분할 비율 이상(train 0.04~2.6%)이 여기서 바로 보임
+dataset\B_train_sequences_long.csv,5817,5,0.18,Split B 윈도우별 train 시퀀스 롱포맷
+dataset\B_targets_long.csv,224037,5,7.67,Split B 윈도우별 val/test 정답 아이템 롱포맷
+dataset\B_cold_tiers.csv,36303,4,0.66,윈도우별 아이템 콜드 등급(unseen/very_rare/...)과 등장 횟수
+dataset\relations_edges_long.csv,403716,3,9.45,아이템 관계 간선 (also_bought / also_viewed / bought_together) 롱포맷
+dataset\relations_summary.csv,4,3,0.0,관계 종류별 간선 수 (한 간선이 여러 관계를 동시에 가질 수 있어 합계 > 고유 간선 수)
+dataset\dataset_summary.csv,15,3,0.0,전체 통계 한 장 요약 (발표자료용)
+embeddings\item_embeddings_preview.csv,300,19,0.09,임베딩 미리보기: 앞쪽 300개 아이템 x 앞쪽 16차원 + 상품명 (엑셀에서 바로 열림)
+embeddings\item_embedding_stats.csv,12101,8,0.81,아이템별 임베딩 통계(노름·평균·표준편차 등). 이상치 점검용
+embeddings\item_embeddings_pca2d.csv,12101,7,1.59,PCA 2차원 좌표 ★ 발표자료 산점도용 (엑셀 분산형 차트로 바로 그릴 수 있음)
+embeddings\item_embeddings_pca50.csv,12101,52,5.28,PCA 50차원 축약 임베딩 (2048차원 원본 대신 가볍게 다룰 때)
+embeddings\pca_explained_variance.csv,50,3,0.0,PCA 주성분별 설명 분산 비율 (몇 차원이면 충분한지 근거)
+embeddings\item_nearest_neighbors_top5.csv,60505,6,13.59,아이템별 코사인 유사도 top-5 이웃 ★ 임베딩 품질 근거 (발표자료 예시표로 사용)
+embeddings\item_embeddings_full_2048d.csv,12101,2050,235.56,"임베딩 원본 전체 12,101 x 2048 ⚠️ 용량 큼 — 엑셀보다 pandas/R 권장"
+sid\sid_summary.csv,2,12,0.0,3단계 vs 4단계 비교 요약 (발표자료용)
+sid\sid_L3_items.csv,12101,11,7.58,아이템별 3단계 SID (코드 3자리 + 충돌 구분 1자리)
+sid\sid_L4_items.csv,12101,12,7.71,아이템별 4단계 SID (코드 4자리 + 충돌 구분 1자리)
+sid\sid_L3_collisions.csv,2347,6,1.33,3단계 충돌 아이템 목록 (그룹 크기 큰 순)
+sid\sid_L4_collisions.csv,1248,6,0.71,4단계 충돌 아이템 목록
+sid\sid_L3_code_usage.csv,768,3,0.01,3단계 레벨별 코드 사용 분포
+sid\sid_L4_code_usage.csv,1024,3,0.01,4단계 레벨별 코드 사용 분포

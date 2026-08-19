@@ -1,0 +1,4 @@
+﻿window,train_users,train_interactions,val_users,val_interactions,test_users,test_interactions,train_ratio_in_window_%,train_ratio_of_all_198502_%,cold_normal,cold_rare,cold_very_rare,cold_unseen,cold_tier_total
+W3,25,75,229,502,1810,4738,1.41,0.04,0,0,69,12032,12101
+W4,247,533,1810,4738,6743,20872,2.04,0.27,6,14,364,11717,12101
+W5,1923,5209,6743,20872,21786,172315,2.63,2.62,100,127,1453,10421,12101

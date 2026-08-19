@@ -160,8 +160,11 @@ def deduplicate_rows_in_tensor(
         # Gather the indices where the collisions occur
         indices_to_change = torch.where(inverse_indices == duplicate_indices[i])[0]
 
-        # Create a range based on the number of collision, starting from 1
-        range_to_add = torch.arange(1, num_of_collisions + 1)
+        # [팀 수정 2026-08-19] 충돌 인덱스를 0부터 시작하도록 변경.
+        # GRID 원본은 arange(1, N+1) 이라 충돌 그룹이 1..N 을 받고 비충돌 아이템만 0을 받는다.
+        # 우리 규칙은 "마지막 자리 = 같은 코드를 공유하는 아이템들의 0부터 시작하는 일련번호"이므로
+        # 비충돌 아이템(0)과 충돌 그룹 첫 번째 아이템(0)이 같은 규칙을 따르게 한다. (TIGER 논문 방식)
+        range_to_add = torch.arange(0, num_of_collisions)
 
         # Scatter to those specific indices
         output_indices = output_indices.scatter(0, indices_to_change, range_to_add)
