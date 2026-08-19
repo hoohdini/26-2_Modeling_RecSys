@@ -151,6 +151,10 @@ Split A와 B가 **11,909개 아이템에서 텍스트가 다릅니다** (단어 
 
 학과 GPU 서버(dsl05)에 환경 구축이 끝나 있습니다.
 
+> ⚠️ **`dsl05` 는 팀 전체가 같이 쓰는 단일 계정입니다.** 팀원이 접속하면 제가 만든 데이터에서
+> 그대로 이어서 작업하게 되지만, **서로의 결과를 지울 수도 있습니다.**
+> 서버에 들어오기 전에 반드시 [`docs/SERVER_공동사용.md`](SERVER_공동사용.md) 를 읽어주세요.
+
 - conda 환경(python 3.10 + torch 2.6.0+cu124), flan-t5-xl 캐시 11GB, GRID 코드, TFRecord 전부 업로드
 - `sbatch ~/recsys/embed_beauty.sh` (임베딩 4분) / `sbatch ~/recsys/sid_beauty.sh` (SID 7분)
 - 사용 가능 GPU: `partition1` (hpc-stat1, **RTX 6000 Ada 48GB 5장**), `jobs` (hpc, 2장)

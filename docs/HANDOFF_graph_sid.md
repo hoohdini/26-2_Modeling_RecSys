@@ -223,6 +223,11 @@ sbatch sid_beauty.sh
 - 접속 정보·계정은 팀 내부 문서 `GPU_서버_사용가이드.md` 에 있습니다
   (**계정 정보 때문에 깃허브에는 안 올립니다** — 팀 내부 채널로 받으세요).
 - 참고 성능: RTX 6000 Ada 48GB 1장 기준 임베딩 추출 3분 50초, SID 3·4단계 합쳐 6분 59초.
+- ⚠️ **`dsl05` 는 팀 공용 계정입니다.** SID 를 만들 때 `TAG` 를 지정하지 않으면 baseline 과
+  충돌합니다. 규칙은 [`SERVER_공동사용.md`](SERVER_공동사용.md) 참고:
+  ```bash
+  sbatch --export=ALL,TAG=gsid_본인이름,EMB=<내 임베딩.pt>,DIM=<D> \n         --job-name=sid_본인이름 ~/recsys/sid_beauty.sh
+  ```
 
 ---
 

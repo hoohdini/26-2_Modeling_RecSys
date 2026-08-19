@@ -27,6 +27,7 @@ docs/            작업 리포트와 인수인계 문서
 | [`docs/TEAM_RESULTS.md`](docs/TEAM_RESULTS.md) | **전원** — 결과 요약, 결정할 것, 각자 할 일 |
 | [`docs/HANDOFF_graph_sid.md`](docs/HANDOFF_graph_sid.md) | **그래프 기반 SID 담당자** — 입력물·비교 기준·지뢰 |
 | [`docs/TOKENIZE_EMBED_SID_REPORT.md`](docs/TOKENIZE_EMBED_SID_REPORT.md) | 상세 경위와 전체 수치 |
+| [`docs/SERVER_공동사용.md`](docs/SERVER_공동사용.md) | **서버에 들어오는 모든 팀원** — 공용 계정 주의사항·규칙 |
 | [`csv_export/README.md`](csv_export/README.md) | CSV 파일 설명 |
 
 핵심 산출물:
