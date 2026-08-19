@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+._*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 실험 산출물 (대용량 — 레포에 올리지 않음)
+build/
+grid_data/
+*.pkl
+*.pt
+outputs/runs/
+logs/runs/
