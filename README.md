@@ -25,9 +25,12 @@ docs/            작업 리포트와 인수인계 문서
 | 문서 | 대상 |
 |---|---|
 | [`docs/TEAM_RESULTS.md`](docs/TEAM_RESULTS.md) | **전원** — 결과 요약, 결정할 것, 각자 할 일 |
+| [`docs/TIGER_BASELINE_REPORT.md`](docs/TIGER_BASELINE_REPORT.md) | **TIGER 베이스라인 결과** — 실험표 ①번 칸 완료 |
+| [`docs/REQUEST_전처리_splitB.md`](docs/REQUEST_전처리_splitB.md) | **전처리 담당자** — Split B 프로토콜 변경 요청 |
 | [`docs/HANDOFF_graph_sid.md`](docs/HANDOFF_graph_sid.md) | **그래프 기반 SID 담당자** — 입력물·비교 기준·지뢰 |
 | [`docs/TOKENIZE_EMBED_SID_REPORT.md`](docs/TOKENIZE_EMBED_SID_REPORT.md) | 상세 경위와 전체 수치 |
 | [`docs/SERVER_공동사용.md`](docs/SERVER_공동사용.md) | **서버에 들어오는 모든 팀원** — 공용 계정 주의사항·규칙 |
+| [`docs/GPU_서버_사용가이드.md`](docs/GPU_서버_사용가이드.md) | 서버 접속 정보·환경 구축·함정 🔒 **계정 비밀번호 포함 — 외부 유출 금지** |
 | [`csv_export/README.md`](csv_export/README.md) | CSV 파일 설명 |
 
 핵심 산출물:
@@ -43,6 +46,14 @@ sid = torch.load("sid/L4/sid_tensor.pt").T                            # (12101, 
 |---|---|---|---|
 | 3단계 × 256 | 87.97% | 1,456 (12.03%) | 4 |
 | 4단계 × 256 | 93.69% | 763 (6.31%) | 5 |
+
+**TIGER 베이스라인 (실험표 ①번 칸, 4단계 SID · 전체 테스트셋 22,363명):**
+
+| 모델 | Recall@10 | NDCG@10 |
+|---|---|---|
+| EASE_R (고전 최강) | 0.0505 | 0.0262 |
+| **TIGER `clip_L4`** | **0.0660** | **0.0372** |
+| TIGER 논문 (Beauty) | 약 0.0648 | 약 0.0384 |
 
 > ⚠️ **`Beauty_split_B.pkl`(절대시간 분할)은 아직 콜드스타트 실험에 쓸 수 없습니다.**
 > train이 전체의 0.04~2.62%뿐입니다. 자세한 건 `docs/TEAM_RESULTS.md` 5절.
@@ -75,7 +86,10 @@ sid = torch.load("sid/L4/sid_tensor.pt").T                            # (12101, 
    - 실행 스크립트: `code/server/embed_beauty.sh`, `code/server/sid_beauty.sh`
    - ⚠️ GRID 입력 TFRecord는 GZIP 압축 필수, 폴더명은 `training/evaluation/testing`
    - ⚠️ `num_workers=0` + `timeout=0` + `persistent_workers=false` 를 세트로 줘야 함
-3. **모델** — TIGER 베이스라인 재현(`GRID/`) 및 MaskGR(`MaskGR/`) 실험 (다음 단계)
+3. **모델** — TIGER 베이스라인 재현 **완료** (`code/server/tiger_beauty.sh`),
+   MaskGR(`MaskGR/`) 실험은 다음 단계
+   - 학습 레시피: warmup 1,500 + cosine decay + gradient clipping 1.0, 배치 256
+   - ⚠️ `num_hierarchies` = SID 텐서 행 수, `vocab_size` = NH × 256 (자세한 함정은 리포트 4절)
 
 ## 참고 논문
 

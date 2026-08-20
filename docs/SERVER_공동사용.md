@@ -116,12 +116,27 @@ conda create --clone ~/miniconda3/envs/grid --prefix ~/recsys/work/<이름>/env
 
 | 항목 | 값 |
 |---|---|
-| QOS(`normal`) 한도 | **cpu=32, gpu=2** — 계정 전체 합산 |
+| QOS(`normal`) 한도 | **cpu=32, gpu=2** — 계정 전체 합산, **동시 사용량** 기준 |
+| 누적 GPU-시간 총량 한도 | **없음** (`GrpTRESMins` 미설정) |
+| 작업당 최대 시간 | **없음** (`MaxWall` 미설정) |
 | 쓸 수 있는 파티션 | `partition1` (hpc-stat1, **RTX 6000 Ada 48GB** 5장), `jobs` (hpc, 2장) |
 | 못 쓰는 파티션 | `brl` (다른 랩 전용 QOS), `gpu` (down) |
 
-**두 명이 각각 GPU 1장씩 잡으면 계정이 꽉 찹니다.** 세 번째 사람의 작업은 대기(PD)로 갑니다.
-긴 작업을 돌리기 전에 팀에 공유해주세요.
+> ✅ **오래 돌린다고 소진되는 "할당량"은 없습니다.** 한도는 "한 번에 몇 개까지"이지
+> "총 몇 시간까지"가 아닙니다. 참고로 2026-08 기준 계정별 누적 사용 실적은
+> dsl05가 161인 반면 dsl07은 14,259, dsl04는 7,750으로 **우리는 거의 안 쓴 편**입니다.
+> `#SBATCH --time` 값은 스크립트에 넣은 안전장치일 뿐이라 필요하면 늘려도 됩니다.
+
+**실질적인 제약은 팀원과의 경합입니다.** 두 명이 각각 GPU 1장씩 잡으면 계정이 꽉 차고,
+세 번째 사람의 작업은 대기(PD)로 갑니다. 나중에 4x2 실험 그리드를 돌릴 때가 진짜 병목입니다
+(8칸을 동시에 2개씩밖에 못 돌립니다). 긴 작업을 돌리기 전에 팀에 공유해주세요.
+
+확인 명령:
+```bash
+sacctmgr -n show qos where name=normal format=Name,GrpTRESMins%20,MaxTRESPU%25,MaxWall
+squeue -u dsl05 -o "%.8i %.20j %.2t %.10M %b %C"      # 지금 팀이 쓰는 양
+scontrol show node hpc-stat1 | grep -E "CfgTRES|AllocTRES"   # 노드 여유
+```
 
 참고 소요 시간 (RTX 6000 Ada 1장):
 
@@ -140,8 +155,8 @@ conda create --clone ~/miniconda3/envs/grid --prefix ~/recsys/work/<이름>/env
 ssh -p 37220 dsl05@165.132.80.36
 ```
 
-- 비밀번호는 팀 내부 문서 `GPU_서버_사용가이드.md` 참고
-  (**계정 정보가 있어 깃허브에 올리지 않습니다** — 팀 채널로 받으세요)
+- 비밀번호는 [`docs/GPU_서버_사용가이드.md`](GPU_서버_사용가이드.md) 에 있습니다
+  (이 저장소가 **private 이라 포함**돼 있습니다 — 🔒 외부에 붙여넣지 마세요)
 - **2026-08-19 현재 초기 비밀번호를 아직 변경하지 않았습니다** (팀 합의). 변경 시 전원 공지 필요.
 - 현재 SSH 키가 등록된 기기는 **1대뿐**입니다. 본인 기기를 등록하려면:
 
@@ -203,4 +218,4 @@ $PY -m src.train ...
 - `docs/TEAM_RESULTS.md` — 지금까지 결과 요약, 결정할 것
 - `docs/HANDOFF_graph_sid.md` — 그래프 SID 담당자용
 - `docs/TOKENIZE_EMBED_SID_REPORT.md` — 상세 경위·전체 수치
-- `GPU_서버_사용가이드.md` (팀 내부, 깃허브 미업로드) — 접속 정보 포함 전체 가이드
+- [`docs/GPU_서버_사용가이드.md`](GPU_서버_사용가이드.md) — 접속 정보 포함 서버 전체 가이드 🔒
