@@ -111,19 +111,52 @@ sbatch --export=ALL,TAG=<이름>,CLIP=1.0,MAX_STEPS=30000 --job-name=tiger_<이�
 
 > **교훈: 검증 표본은 반드시 셔플할 것.** 전수 검증도 26초면 끝나므로 아낄 이유가 없었습니다.
 
-### ② 추론 검증 설정 오류 — 정답을 입력에 넣고 평가했습니다
+### ② 추론 경로로는 테스트 지표를 재현할 수 없습니다 (구조적 제약)
 
-예측을 육안 확인하려고 `tiger_inference_flat` 으로 추론을 돌렸는데,
-이 config 는 `labels: null` 이라 **마스킹을 하지 않습니다.**
+예측을 육안 확인하려고 `tiger_inference_flat` 으로 추론을 돌려 지표를 재계산했는데,
+값이 학습 로그와 크게 달랐습니다(Recall@10 0.0961 vs 0.0660). 원인을 추적한 결과
+**GRID 의 구조상 추론 경로로는 평가를 재현할 수 없습니다.**
 
-| | 마스킹 | 모델이 보는 것 | 예측 대상 |
-|---|---|---|---|
-| 학습 스크립트의 test 단계 | `NextKTokenMasking(next_k=5)` | 마지막 아이템을 **가림** | 정답 |
-| `tiger_inference_flat` (기본) | **없음** | 시퀀스 **전체(정답 포함)** | 정답 **다음** |
+```python
+# src/models/modules/semantic_id/tiger_generation_model.py
+def predict_step(self, batch: SequentialModelInputData):        # 라벨 인자가 없음
+    generated_sids, _ = self.model_step(batch)
 
-이 상태로 재계산한 값(Recall@10 0.1027 등)은 **무효**입니다.
-**유효한 값은 학습 로그의 `test/*` 지표뿐입니다.**
-추론으로 검증하려면 predict 데이터로더에도 동일한 마스킹을 넣어야 합니다.
+def eval_step(self, batch: Tuple[SequentialModelInputData, SequentialModuleLabelData], ...):
+    ...                                                          # 라벨을 받아 마스킹된 입력 사용
+```
+
+`predict_step` 은 배치에서 **모델 입력만** 꺼내 쓰고, 정답을 가리는 처리는
+`eval_step`(검증·테스트 전용)에서만 일어납니다. 즉 추론 경로는
+**"전체 시퀀스를 주고 다음 아이템을 생성하라"** 는 실서비스용이지 평가용이 아닙니다.
+
+실제로 `labels` 오버라이드를 넣어도, `masking_token` 을 학습과 같은 -1 로 맞춰도
+**예측 결과가 바이트 단위로 동일**했습니다(md5 일치). 라벨이 아예 소비되지 않기 때문입니다.
+
+| | 정답 마스킹 | 모델이 보는 것 |
+|---|---|---|
+| 학습 스크립트의 test 단계 (`eval_step`) | O | 마지막 아이템을 가린 시퀀스 |
+| `src.inference` (`predict_step`) | **X** | 시퀀스 **전체(정답 포함)** |
+
+**따라서 유효한 값은 학습 로그의 `test/*` 지표뿐입니다.**
+추론 출력으로 지표를 계산하면 정답을 입력에 넣은 셈이 되어 부풀려집니다.
+
+> 지표 코드를 독립 검증하려면 `eval_step` 에 후킹하거나 테스트 루프에서 예측을 덤프하도록
+> 코드를 수정해야 합니다. 아직 하지 않았습니다.
+
+### ③ `masking_token` 이 학습과 추론 config 에서 다릅니다
+
+| config | `masking_token` |
+|---|---|
+| `tiger_train_flat` (test 단계가 참조) | **-1** |
+| `tiger_inference_flat` | **1** |
+
+`NextKTokenMasking` 은 마지막 K토큰을 [마스킹토큰 1개 + 패딩 K-1개]로 바꾸는데,
+모델은 학습 내내 -1 을 "여기를 예측하라" 신호로 배웁니다. 1 은 실제 코드값
+(계층0의 코드 1)이라 전혀 다른 입력이 됩니다.
+
+지금은 `predict_step` 이 라벨을 안 쓰므로 영향이 없지만,
+**나중에 실제 추론 서비스를 만들 때 반드시 -1 로 맞춰야 합니다.**
 
 ---
 
@@ -195,7 +228,7 @@ csv_export/tiger/
 ├── tiger_<TAG>_val_curve.csv      검증 곡선 (진동 패턴이 보임)
 └── tiger_<TAG>_train_loss.csv     학습 손실 곡선
 code/server/tiger_beauty.sh        학습 스크립트 (함정 주석 포함)
-code/server/tiger_infer.sh         추론 스크립트 (⚠️ 5절 ② 마스킹 문제 미해결)
+code/server/tiger_infer.sh         추론 스크립트 (⚠️ 평가용 아님 — 5절 ② 참고)
 code/export_tiger_metrics.py       지표 → CSV 변환
 ```
 
