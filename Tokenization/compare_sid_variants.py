@@ -7,7 +7,7 @@ sid_tensor.pt 하나만으로 계산되는 요약 통계만 뽑는다). 서버�
 각 variant 디렉터리는 L3/sid_tensor.pt, L4/sid_tensor.pt를 담고 있어야 한다
 (sid/, sid/gsid_a03/ 같은 기존 레이아웃과 동일).
 
-    python code/compare_sid_variants.py \
+    python Tokenization/compare_sid_variants.py \
         --variant baseline sid \
         --variant gsid_a03 sid/gsid_a03 \
         --variant gsid_a03_centered sid/gsid_a03_centered
