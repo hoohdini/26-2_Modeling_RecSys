@@ -1,0 +1,36 @@
+{
+ "K": 10,
+ "n_user": 22363,
+ "tests": {
+  "TIGER_clip_L4_vs_EASE_R": {
+   "n": 22363,
+   "mean_diff": 0.01196,
+   "ci95": [
+    0.009749,
+    0.014137
+   ],
+   "p_value_gt0": 0.0,
+   "relative_gain": 0.4518
+  },
+  "TIGER_clip_L4_vs_ItemKNN": {
+   "n": 22363,
+   "mean_diff": 0.016352,
+   "ci95": [
+    0.014156,
+    0.018477
+   ],
+   "p_value_gt0": 0.0,
+   "relative_gain": 0.7406
+  },
+  "TIGER_clip_L4_vs_MostPopular": {
+   "n": 22363,
+   "mean_diff": 0.032847,
+   "ci95": [
+    0.030752,
+    0.035007
+   ],
+   "p_value_gt0": 0.0,
+   "relative_gain": 5.8809
+  }
+ }
+}
