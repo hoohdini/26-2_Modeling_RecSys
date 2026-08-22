@@ -228,6 +228,8 @@ MaskGR은 생성 분포 자체를 바꿀 수 있고, `diffusion_config` 에 손�
 ## 7. 아직 확인 못 한 것
 
 - [ ] MaskGR requirements 와 서버 CUDA 조합 — 실제 설치 전엔 모릅니다
+- [x] ~~재전처리 후 SID 를 다시 만들어야 하나~~ — **아닙니다.** `iid` 매핑이 동일해
+      기존 `sid/L4/sid_tensor.pt` 를 그대로 씁니다 (`docs/SPLIT_재전처리_영향.md` 3절)
 - [ ] `constrained-beam-search-generation` 이 실제로 도는지 (GRID의 같은 기능은 버그로 사망)
 - [ ] MaskGR 학습이 30,000스텝에서 수렴하는지 — TIGER 예산을 그대로 가져왔을 뿐입니다
 - [ ] `projection` / `project_generated_ids` 가 무엇으로 켜지는지 — 무효 SID를 줄일 수 있는 경로로 보입니다
