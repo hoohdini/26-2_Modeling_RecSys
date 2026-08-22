@@ -1,0 +1,119 @@
+{
+ "label": "clip_L4_60k",
+ "n_items": 12101,
+ "n_user": 22363,
+ "pred_file": "tiger_runs/clip_L4_60k/eval_dump_k200/test_predictions_rank0.pkl",
+ "depths": {
+  "10": {
+   "n_reached": 6746,
+   "reach_rate": 0.557475,
+   "tail_reached": 2331,
+   "tail_reach_rate": 0.385226,
+   "by_bucket": {
+    "zero-shot": {
+     "reached": 0,
+     "total": 43,
+     "rate": 0.0
+    },
+    "few-shot": {
+     "reached": 192,
+     "total": 726,
+     "rate": 0.264463
+    },
+    "low": {
+     "reached": 1708,
+     "total": 4566,
+     "rate": 0.374069
+    },
+    "mid": {
+     "reached": 3433,
+     "total": 5302,
+     "rate": 0.647492
+    },
+    "head": {
+     "reached": 1413,
+     "total": 1464,
+     "rate": 0.965164
+    }
+   }
+  },
+  "50": {
+   "n_reached": 9626,
+   "reach_rate": 0.795471,
+   "tail_reached": 4084,
+   "tail_reach_rate": 0.67493,
+   "by_bucket": {
+    "zero-shot": {
+     "reached": 0,
+     "total": 43,
+     "rate": 0.0
+    },
+    "few-shot": {
+     "reached": 339,
+     "total": 726,
+     "rate": 0.466942
+    },
+    "low": {
+     "reached": 3124,
+     "total": 4566,
+     "rate": 0.684187
+    },
+    "mid": {
+     "reached": 4703,
+     "total": 5302,
+     "rate": 0.887024
+    },
+    "head": {
+     "reached": 1460,
+     "total": 1464,
+     "rate": 0.997268
+    }
+   }
+  },
+  "200": {
+   "n_reached": 11081,
+   "reach_rate": 0.915709,
+   "tail_reached": 5149,
+   "tail_reach_rate": 0.850934,
+   "by_bucket": {
+    "zero-shot": {
+     "reached": 1,
+     "total": 43,
+     "rate": 0.023256
+    },
+    "few-shot": {
+     "reached": 513,
+     "total": 726,
+     "rate": 0.706612
+    },
+    "low": {
+     "reached": 3938,
+     "total": 4566,
+     "rate": 0.862462
+    },
+    "mid": {
+     "reached": 5166,
+     "total": 5302,
+     "rate": 0.974349
+    },
+    "head": {
+     "reached": 1463,
+     "total": 1464,
+     "rate": 0.999317
+    }
+   }
+  }
+ },
+ "items_for_half_candidate_slots": 1274,
+ "never_reached": {
+  "n": 1020,
+  "rate": 0.084291,
+  "by_bucket": {
+   "zero-shot": 42,
+   "few-shot": 213,
+   "low": 628,
+   "mid": 136,
+   "head": 1
+  }
+ }
+}

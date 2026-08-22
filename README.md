@@ -27,6 +27,7 @@ docs/            작업 리포트와 인수인계 문서
 | [`docs/TEAM_RESULTS.md`](docs/TEAM_RESULTS.md) | **전원** — 결과 요약, 결정할 것, 각자 할 일 |
 | [`docs/TIGER_BASELINE_REPORT.md`](docs/TIGER_BASELINE_REPORT.md) | **TIGER 베이스라인 결과** — 실험표 ①번 칸 완료 |
 | [`docs/REQUEST_전처리_splitB.md`](docs/REQUEST_전처리_splitB.md) | **전처리 담당자** — Split B 프로토콜 변경 요청 |
+| [`docs/TRACK_C_시작.md`](docs/TRACK_C_시작.md) | **다양성 평가 트랙** — 새 세션 시작 문서 |
 | [`docs/HANDOFF_graph_sid.md`](docs/HANDOFF_graph_sid.md) | **그래프 기반 SID 담당자** — 입력물·비교 기준·지뢰 |
 | [`docs/TOKENIZE_EMBED_SID_REPORT.md`](docs/TOKENIZE_EMBED_SID_REPORT.md) | 상세 경위와 전체 수치 |
 | [`docs/SERVER_공동사용.md`](docs/SERVER_공동사용.md) | **서버에 들어오는 모든 팀원** — 공용 계정 주의사항·규칙 |
