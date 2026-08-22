@@ -29,7 +29,7 @@ import numpy as np
 if __name__ == "__main__":      # import 될 때 남의 stdout 을 갈아끼우면 안 된다
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from evaluate import Evaluator, load_split_a, load_split_b  # noqa: E402
+from evaluate import Evaluator, load_split_a, load_split_b, split_key_type  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -102,10 +102,24 @@ def decode_predictions(pred_path, sid2item, H):
 # ---------------------------------------------------------------
 # 2. user 인덱스 -> 원본 user 키
 # ---------------------------------------------------------------
-def remap_users(preds_by_idx, uid):
-    """TIGER 는 정수 user_id 를 쓰고 split pkl 은 원본 문자열 키를 쓴다."""
-    idx2raw = {v: k for k, v in uid.items()}
+def remap_users(preds_by_idx, uid, key_type=str):
+    """예측(정수 user_id 키)을 split pkl 이 쓰는 키 자료형으로 맞춘다.
+
+    2026-08-22 재전처리에서 split 의 유저 키가 reviewerID 문자열 -> 정수 user_id 로
+    바뀌었다. 예전 pkl 도 계속 열려야 하므로 key_type 을 받아 분기한다.
+      key_type is int -> 예측 키를 그대로 쓴다 (uid 에 있는 것만 남긴다)
+      key_type is str -> 예전처럼 원본 문자열로 되돌린다
+    """
     out, missing = {}, 0
+    if key_type is int:
+        valid = set(uid.values())
+        for u, lst in preds_by_idx.items():
+            if u not in valid:
+                missing += 1
+                continue
+            out[u] = lst
+        return out, missing
+    idx2raw = {v: k for k, v in uid.items()}
     for u, lst in preds_by_idx.items():
         raw = idx2raw.get(u)
         if raw is None:
@@ -159,7 +173,10 @@ def main():
 
     with open(a.split, "rb") as f:
         A = pickle.load(f)
-    preds, missing = remap_users(preds_idx, A["uid"])
+    ktype = split_key_type(A)
+    print(f"  유저 키 : {ktype.__name__}"
+          + ("  (재전처리 이후 정수 user_id)" if ktype is int else "  (구 스키마 reviewerID 문자열)"))
+    preds, missing = remap_users(preds_idx, A["uid"], ktype)
     if missing:
         print(f"  [경고] split 에 없는 user_id {missing:,}개 무시")
 
@@ -175,14 +192,14 @@ def main():
 
     # 덤프에 정답 SID 가 함께 들어 있으면, 그것이 split 의 test 타깃과 같은지 대조한다.
     # 이게 맞아야 "모델이 본 정답"과 "우리가 채점하는 정답"이 같은 것이 증명된다.
+    idx2raw = {v: k for k, v in A["uid"].items()} if ktype is str else None
     if labels_idx and a.window:
         print("  덤프 정답 SID 대조: Temporal 트랙에서는 건너뜁니다 — testing 시퀀스에 붙인 "
               "정답은 마스크 자리를 만들기 위한 placeholder 하나뿐이라 정답 집합과 1:1 대응하지 않습니다.")
     elif labels_idx:
-        idx2raw = {v: k for k, v in A["uid"].items()}
         n_chk = n_ok = 0
         for u, lab in labels_idx.items():
-            raw = idx2raw.get(u)
+            raw = u if ktype is int else idx2raw.get(u)
             if raw is None or lab is None:
                 continue
             n_chk += 1

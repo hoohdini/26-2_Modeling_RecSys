@@ -119,10 +119,17 @@ python3 code/to_grid_b.py Beauty_split_B.pkl grid_data/beauty_B -w W5    # 하�
 윈도우 하나가 독립 데이터셋(`training/ evaluation/ testing/`)이 되므로,
 `DATA=grid_data/beauty_B/W5` 로 주면 학습·덤프가 그대로 돕니다.
 
-> ⚠️ **Split B 는 전처리 담당이 균등분할 → 밀도 가중 분할로 다시 만드는 중입니다.**
-> `to_grid_b.py` 와 `evaluate.load_split_b` 는 윈도우의 **키 이름**
-> (`train_user_seq` / `val_targets` / `test_targets` / `cold_tiers`)에만 의존합니다.
-> 내용이 바뀌어도 그대로 돌고, 키가 바뀌면 그 두 곳만 고치면 됩니다.
+> **Split B 재전처리 완료** (2026-08-22). 리뷰 건수 분위수로 위치를 잡고 날짜값으로
+> 스냅하는 방식이라 W3/W4/W5 가 전부 학습 가능한 규모입니다.
+>
+> | 윈도우 | 학습 유저 | 채점 유저 | 정답 | train 상호작용 |
+> |---|---|---|---|---|
+> | W3 | 9,455 | 11,358 | 39,728 | 39,563 |
+> | W4 | 14,589 | 11,489 | 39,619 | 79,342 |
+> | W5 | 18,110 | 10,234 | 39,813 | 119,070 |
+>
+> `to_grid_b.py` 와 `evaluate.load_split_b` 는 **신·구 스키마를 모두 받습니다.**
+> (신: `windows` 가 dict + `train_seq` + `cold_tiers` 최상위 / 구: list + `train_user_seq`)
 
 > ⚠️ **Temporal 은 유저당 정답이 여러 개**입니다 (지금 W5 기준 테스트 유저 21,786명 중
 > 21,397명이 2개 이상). "마지막 아이템이 라벨" 규약이 안 맞아서, testing 시퀀스에는
@@ -224,8 +231,6 @@ MaskGR은 생성 분포 자체를 바꿀 수 있고, `diffusion_config` 에 손�
 - [ ] `constrained-beam-search-generation` 이 실제로 도는지 (GRID의 같은 기능은 버그로 사망)
 - [ ] MaskGR 학습이 30,000스텝에서 수렴하는지 — TIGER 예산을 그대로 가져왔을 뿐입니다
 - [ ] `projection` / `project_generated_ids` 가 무엇으로 켜지는지 — 무효 SID를 줄일 수 있는 경로로 보입니다
-- [ ] **Temporal 윈도우가 학습에 충분한 규모인지** — 지금 로컬 Split B(옛 균등분할)는
-      W5 학습 유저가 1,923명뿐이라 학습이 성립하지 않습니다. 밀도 가중 분할본이 오면
-      `to_grid_b.py` 가 윈도우별 규모를 찍어 주니 그걸로 판단하면 됩니다
+- [x] ~~Temporal 윈도우 규모~~ — 재전처리로 해결. W3 9,455 / W4 14,589 / W5 18,110 유저
 - [ ] CRAB 주소가 올라오면 `./run_maskgr.sh crab` 로 같은 경로를 태우면 됩니다 —
       파이프라인 변경 없음

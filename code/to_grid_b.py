@@ -44,19 +44,33 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from to_grid_v2 import MAX_LEN, write_items, write_seqs  # noqa: E402
 
 
-def build_window(D, w, out_dir, max_len):
+def iter_windows(D):
+    """스키마 두 가지를 모두 받아 (라벨, 윈도우dict) 를 순서대로 돌려준다.
+
+    신(2026-08-22 재전처리)  windows = {라벨: {train_seq, val_targets, test_targets, ...}}
+    구                        windows = [{window_label, train_user_seq, ...}]
+    """
+    w = D.get("windows")
+    if isinstance(w, dict):
+        for lbl in sorted(w):
+            yield lbl, w[lbl]
+    else:
+        for x in (w or []):
+            yield x["window_label"], x
+
+
+def build_window(D, label, w, out_dir, max_len):
     """윈도우 하나 → <out_dir>/<label>/{items,training,evaluation,testing}"""
     uid = D["uid"]
     n_item = len(D["iid"])
-    label = w["window_label"]
     root = os.path.join(out_dir, label)
 
-    tr_seq = w["train_user_seq"]
-    val_t = w.get("val_targets", {}) or {}
-    test_t = w.get("test_targets", {}) or {}
+    tr_seq = w.get("train_seq", w.get("train_user_seq")) or {}
+    val_t = w.get("val_targets") or {}
+    test_t = w.get("test_targets") or {}
 
     def to_int(u):
-        return uid[u] if isinstance(u, str) else int(u)
+        return u if isinstance(u, int) else uid[u]
 
     tr, ev, te = {}, {}, {}
     for u, hist in tr_seq.items():
@@ -79,8 +93,11 @@ def build_window(D, w, out_dir, max_len):
     n_multi = sum(1 for v in test_t.values() if len(v) > 1)
     print(f"  테스트 정답이 2개 이상인 유저 {n_multi:,} "
           f"(정답 총 {sum(len(v) for v in test_t.values()):,}개)")
+    for k in ("n_train_interactions", "n_val_interactions", "n_test_interactions"):
+        if k in w:
+            print(f"  {k} = {w[k]:,}")
     if len(tr) < 1000:
-        print(f"  ⚠️ 학습 유저가 {len(tr):,}명뿐입니다. 이 윈도우로는 학습이 성립하지 않을 수 있습니다.")
+        print(f"  [경고] 학습 유저가 {len(tr):,}명뿐입니다. 이 윈도우로는 학습이 성립하지 않을 수 있습니다.")
 
     os.makedirs(root, exist_ok=True)
     write_items(os.path.join(root, "items"), D["item_text"], n_item)
@@ -101,15 +118,15 @@ def main():
     D = pickle.load(open(a.pkl, "rb"))
     if "windows" not in D:
         raise SystemExit("windows 키가 없습니다. Split B pkl 이 맞습니까?")
-    wins = D["windows"]
+    wins = list(iter_windows(D))
     print(f"유저 {len(D['uid']):,} / 상품 {len(D['iid']):,} / 윈도우 {len(wins)}개 "
-          f"({', '.join(w['window_label'] for w in wins)})")
+          f"({', '.join(l for l, _ in wins)})")
 
     made = []
-    for w in wins:
-        if a.window and w["window_label"] != a.window:
+    for lbl, w in wins:
+        if a.window and lbl != a.window:
             continue
-        made.append(build_window(D, w, a.out, a.max_len))
+        made.append(build_window(D, lbl, w, a.out, a.max_len))
     if not made:
         raise SystemExit(f"해당 윈도우를 못 찾았습니다: {a.window}")
 

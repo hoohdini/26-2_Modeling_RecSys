@@ -123,39 +123,69 @@ def recovery_rate(baseline, ours, oracle):
     return round((ours - baseline) / denom * 100, 2)
 
 
+def split_key_type(D):
+    """split pkl 의 유저 키가 원본 문자열인지 정수 user_id 인지 알아낸다.
+
+    2026-08-22 재전처리에서 loo_* / train_seq 의 키가 reviewerID 문자열 -> 정수 user_id
+    로 바뀌었다. 예전 pkl 도 계속 열려야 하므로 자동으로 판별한다.
+    """
+    for k in ("loo_train", "user_seq"):
+        d = D.get(k)
+        if isinstance(d, dict) and d:
+            return type(next(iter(d)))
+    w = D.get("windows")
+    if isinstance(w, dict) and w:
+        first = next(iter(w.values()))
+        for k in ("train_seq", "train_user_seq"):
+            if isinstance(first.get(k), dict) and first[k]:
+                return type(next(iter(first[k])))
+    elif isinstance(w, list) and w:
+        for k in ("train_seq", "train_user_seq"):
+            if isinstance(w[0].get(k), dict) and w[0][k]:
+                return type(next(iter(w[0][k])))
+    return str
+
+
 def load_split_b(pkl_path, window):
-    """Beauty_split_B.pkl 의 윈도우 하나 → (train_counts, hist, targets, n_items)
+    """Beauty_split_B.pkl 의 윈도우 하나 -> (train_counts, hist, targets, n_items, cold_tiers)
 
     Split A 와 반환 규약을 맞춰 두었으므로 Evaluator 는 그대로 쓴다.
     다른 점 둘:
       · targets 가 유저당 **여러 개**다. Evaluator 는 targets 를 집합으로 받으므로
         recall = 맞힌 정답 수 / 전체 정답 수 로 자연스럽게 계산된다.
-      · 학습 등장 횟수(=롱테일·콜드 버킷의 기준)를 그 윈도우의 train_user_seq 로만 센다.
-        윈도우마다 롱테일 집합이 달라지는 것이 **의도한 동작**이다 — 시간이 흐르며
-        무엇이 인기였는지가 달라지는 것을 재는 트랙이기 때문이다.
+      · 학습 등장 횟수(=롱테일·콜드 버킷의 기준)를 그 윈도우의 학습 시퀀스로만 센다.
+        윈도우마다 롱테일 집합이 달라지는 것이 **의도한 동작**이다.
 
-    윈도우가 제공하는 `cold_tiers`(아이템 -> 등급)는 따로 돌려준다. 전처리 담당이
-    정의한 콜드 등급이라 우리 BUCKETS 와 다를 수 있고, 둘을 섞으면 안 된다.
+    스키마 두 가지를 모두 받는다.
+      신(2026-08-22 재전처리) windows = {라벨: {train_seq, val_targets, test_targets, ...}}
+                              cold_tiers = {라벨: {item: 등급}}   ← 최상위로 이동
+      구                      windows = [{window_label, train_user_seq, ..., cold_tiers}]
     """
     import pickle
     with open(pkl_path, "rb") as f:
         D = pickle.load(f)
-    uid = D["uid"]
     n_items = len(D["iid"])
-    wins = {w["window_label"]: w for w in D["windows"]}
-    if window not in wins:
-        raise KeyError(f"윈도우 {window} 없음. 있는 것: {sorted(wins)}")
-    w = wins[window]
 
-    def key(u):
-        return u if isinstance(u, str) else u
+    wins = D.get("windows")
+    if isinstance(wins, dict):                      # 신 스키마
+        if window not in wins:
+            raise KeyError(f"윈도우 {window} 없음. 있는 것: {sorted(wins)}")
+        w = wins[window]
+        tiers = (D.get("cold_tiers") or {}).get(window)
+    else:                                           # 구 스키마
+        byl = {x["window_label"]: x for x in (wins or [])}
+        if window not in byl:
+            raise KeyError(f"윈도우 {window} 없음. 있는 것: {sorted(byl)}")
+        w = byl[window]
+        tiers = w.get("cold_tiers")
 
-    hist = {u: list(v) for u, v in w["train_user_seq"].items()}
+    train = w.get("train_seq", w.get("train_user_seq")) or {}
+    hist = {u: list(v) for u, v in train.items()}
     tgt = {u: set(v) for u, v in (w.get("test_targets") or {}).items() if v}
     tc = Counter()
     for v in hist.values():
         tc.update(v)
-    return tc, hist, tgt, n_items, w.get("cold_tiers")
+    return tc, hist, tgt, n_items, tiers
 
 
 def pareto_table(points, acc="ndcg@20", div="tail_exposure@20"):

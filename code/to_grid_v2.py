@@ -70,9 +70,11 @@ def main():
     n_item = len(iid)
     print(f"유저 {len(uid):,} / 상품 {n_item:,} / max_seq_len(pkl)={D.get('max_seq_len')}")
 
+    # 재전처리(2026-08-22) 이후 loo_* 의 키가 정수 user_id 다. 예전 pkl(문자열 키)도
+    # 계속 열려야 하므로 자료형을 보고 분기한다.
     tr, ev, te = {}, {}, {}
     for u_str, hist in D["loo_train"].items():
-        u = uid[u_str]
+        u = u_str if isinstance(u_str, int) else uid[u_str]
         v, t = D["loo_val"][u_str], D["loo_test"][u_str]
         tr[u] = list(hist)
         ev[u] = list(hist) + [v]
