@@ -29,7 +29,7 @@ import numpy as np
 if __name__ == "__main__":      # import 될 때 남의 stdout 을 갈아끼우면 안 된다
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from evaluate import Evaluator, load_split_a  # noqa: E402
+from evaluate import Evaluator, load_split_a, load_split_b  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -125,6 +125,8 @@ def main():
     ap.add_argument("--pred", default=None, help="예측 pkl 경로 직접 지정 (--run 무시)")
     ap.add_argument("--sid", default=os.path.join(ROOT, "sid", "L4", "sid_tensor.pt"))
     ap.add_argument("--split", default=os.path.join(ROOT, "Beauty_split_A.pkl"))
+    ap.add_argument("--window", default=None,
+                    help="Temporal 트랙: Split B 의 윈도우 라벨 (예: W5). 주면 Split B 로 읽는다")
     ap.add_argument("--label", default=None)
     ap.add_argument("--out", default=None)
     ap.add_argument("--K", default="10,20,50")
@@ -136,13 +138,15 @@ def main():
 
     pred_path = a.pred or os.path.join(ROOT, "tiger_runs", a.run, "infer", "merged_predictions.pkl")
     label = a.label or a.run
-    out_path = a.out or os.path.join(ROOT, "results", f"tiger_{label}_loo.json")
+    track = "temporal" if a.window else "loo"
+    suffix = f"_{a.window}" if a.window else ""
+    out_path = a.out or os.path.join(ROOT, "results", f"tiger_{label}{suffix}_{track}.json")
     K = tuple(int(x) for x in a.K.split(","))
 
     print("=== TIGER -> 평가 하네스 ===")
     print(f"  예측 : {pred_path}")
     print(f"  SID  : {a.sid}")
-    print(f"  분할 : {a.split}")
+    print(f"  분할 : {a.split}" + (f"  (윈도우 {a.window} · Temporal 트랙)" if a.window else "  (LOO 트랙)"))
 
     sid2item, H, n_items_sid = build_sid2item(a.sid)
     print(f"  SID {H}자리 · 아이템 {n_items_sid:,}개")
@@ -159,12 +163,22 @@ def main():
     if missing:
         print(f"  [경고] split 에 없는 user_id {missing:,}개 무시")
 
-    tc, hist, tgt, n_items = load_split_a(a.split)
+    cold_tiers = None
+    if a.window:
+        tc, hist, tgt, n_items, cold_tiers = load_split_b(a.split, a.window)
+        n_tgt = sum(len(v) for v in tgt.values())
+        print(f"  윈도우 {a.window}: 학습 유저 {len(hist):,} · 채점 유저 {len(tgt):,} "
+              f"· 정답 {n_tgt:,}개 (유저당 {n_tgt / max(1, len(tgt)):.1f})")
+    else:
+        tc, hist, tgt, n_items = load_split_a(a.split)
     assert n_items == n_items_sid, f"아이템 수 불일치: split {n_items} vs SID {n_items_sid}"
 
     # 덤프에 정답 SID 가 함께 들어 있으면, 그것이 split 의 test 타깃과 같은지 대조한다.
     # 이게 맞아야 "모델이 본 정답"과 "우리가 채점하는 정답"이 같은 것이 증명된다.
-    if labels_idx:
+    if labels_idx and a.window:
+        print("  덤프 정답 SID 대조: Temporal 트랙에서는 건너뜁니다 — testing 시퀀스에 붙인 "
+              "정답은 마스크 자리를 만들기 위한 placeholder 하나뿐이라 정답 집합과 1:1 대응하지 않습니다.")
+    elif labels_idx:
         idx2raw = {v: k for k, v in A["uid"].items()}
         n_chk = n_ok = 0
         for u, lab in labels_idx.items():
@@ -207,10 +221,32 @@ def main():
         "pred_file": os.path.relpath(pred_path, ROOT).replace("\\", "/"),
         "sid_file": os.path.relpath(a.sid, ROOT).replace("\\", "/"),
         "split_file": os.path.basename(a.split),
+        "track": track,
+        "window": a.window,
         "exclude_seen": bool(a.exclude_seen),
         "tail_frac": 0.5,
         **stats,
     }
+
+    # 전처리 담당이 정의한 콜드 등급이 윈도우에 들어 있으면 그 기준으로도 한 번 더 쪼갠다.
+    # 우리 BUCKETS(학습 등장 횟수)와는 다른 정의라 섞지 않고 따로 보고한다.
+    if cold_tiers:
+        from collections import Counter as _C
+        tier_hit = {}
+        topk = max(K)
+        for u, gts in tgt.items():
+            top = set(preds.get(u, [])[:topk])
+            for g in gts:
+                t = cold_tiers.get(g, "unknown")
+                d = tier_hit.setdefault(t, [0, 0])
+                d[1] += 1
+                d[0] += int(g in top)
+        m[f"tier_recall@{topk}"] = {t: {"n": d[1], "recall": round(d[0] / max(1, d[1]), 6)}
+                                    for t, d in sorted(tier_hit.items())}
+        print("")
+        print(f"  콜드 등급별 recall@{topk} (전처리 담당 정의):")
+        for t, d in sorted(tier_hit.items()):
+            print(f"    {t:<10s} n={d[1]:>6,}  recall={d[0] / max(1, d[1]):.4f}")
     if a.leaky:
         m["_INVALID"] = ("predict_step 경로 산출물 — 정답이 입력에서 가려지지 않아 정확도가 "
                          "부풀려짐. 정확도 지표는 발표에 쓰지 말 것.")
