@@ -1,0 +1,30 @@
+# code/ 의 분석·평가 스크립트를 돌리기 위한 의존성.
+#
+# GRID/ 와 MaskGR/ 는 각자 requirements.txt 를 따로 갖고 있습니다.
+# 서버에서는 환경을 분리해 쓰십시오 — 섞으면 torch 버전이 충돌합니다.
+#
+#   conda env  grid    GRID  학습·임베딩·SID   (GRID/requirements.txt)
+#   conda env  maskgr  MaskGR 확산 학습        (MaskGR/requirements.txt)
+#   conda env  eval    이 파일                 (로컬 분석·지표 계산)
+#
+# 설치:
+#   conda create -n eval python=3.9 -y && conda activate eval
+#   pip install -r requirements.txt
+#
+# 확인된 조합 (팀 로컬에서 실제로 돌아가는 버전):
+#   python 3.9.25 / torch 2.5.1+cu121 / numpy 1.26.4 / scipy 1.13.1
+#   pandas 2.3.3 / tensorflow 2.15.0
+
+# --- 평가 하네스 (evaluate.py 계열 전부) ---------------------------------
+# .pt 텐서(SID·임베딩)와 GRID/MaskGR 덤프 pkl 을 여는 데 필요합니다.
+# CPU 만으로 충분합니다 — 로컬 분석에 GPU 는 안 씁니다.
+torch>=2.0,<3
+numpy>=1.24,<2          # 2.x 는 torch 2.5 와 아직 안 맞는 조합이 있어 1.x 로 묶습니다
+scipy>=1.10
+
+# --- TFRecord 변환 (to_grid_v2.py, to_grid_b.py 만) ----------------------
+# GRID/MaskGR 입력을 만들 때만 필요합니다. 지표만 볼 거면 없어도 됩니다.
+tensorflow>=2.13,<2.17
+
+# --- CSV 내보내기 (export_*.py 만) ---------------------------------------
+pandas>=2.0
