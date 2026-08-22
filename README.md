@@ -41,7 +41,7 @@ Amazon Beauty 원본
 
 | 주소 \ 모델 | TIGER (자기회귀) | MaskGR (마스크 확산) |
 |---|---|---|
-| **텍스트 주소** (베이스라인) | ① ✅ **완료** | ④ ⬜ 다음 |
+| **텍스트 주소** (베이스라인) | ① ✅ LOO·다양성 / ⬜ Temporal | ④ ⬜ 학습 대기 |
 | **G-SID** (그래프 증강) | ③ 🔄 진행 중 | ⑥ ⬜ |
 | **CRAB 주소** (코드북 재균형) | ② ⬜ | ⑤ ⬜ |
 | **CRAB + G-SID** | ⑧ ⬜ | ⑦ ⬜ |
@@ -113,6 +113,7 @@ NDCG@10  0.0016        APLT@10  0.0176
 | 나는… | 읽을 것 |
 |---|---|
 | **처음 온 사람** | 이 README → [`docs/TEAM_RESULTS.md`](docs/TEAM_RESULTS.md) |
+| **텍스트 SID 3트랙을 채운다** | [`docs/RUNBOOK_텍스트SID_3트랙.md`](docs/RUNBOOK_텍스트SID_3트랙.md) — 남은 GPU 작업 7회 |
 | **다른 SID 로 실험한다** | [`docs/HANDOFF_트랙C_다양성평가.md`](docs/HANDOFF_트랙C_다양성평가.md) — 내 실행에 지표 붙이는 법 |
 | **MaskGR 을 돌린다** | [`docs/HANDOFF_MaskGR.md`](docs/HANDOFF_MaskGR.md) |
 | **그래프 SID 담당** | [`docs/HANDOFF_graph_sid.md`](docs/HANDOFF_graph_sid.md) |

@@ -31,7 +31,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="repla
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from baselines import ease_r, item_knn, most_popular, random_rec, to_csr  # noqa: E402
-from evaluate import Evaluator, load_split_a, paired_bootstrap  # noqa: E402
+from evaluate import Evaluator, load_split_a, load_split_b, paired_bootstrap  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOPK = 50
@@ -40,22 +40,42 @@ TOPK = 50
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", default=os.path.join(ROOT, "Beauty_split_A.pkl"))
-    ap.add_argument("--out", default=os.path.join(ROOT, "results", "baseline_splitA_loo.json"))
+    ap.add_argument("--out", default=None)
+    ap.add_argument("--window", default=None,
+                    help="Temporal 트랙: Split B 의 윈도우 라벨 (예: W5). 주면 Split B 로 읽는다")
     ap.add_argument("--models", default="Random,MostPopular,ItemKNN,EASE_R")
     ap.add_argument("--K", default="10,20,50")
     a = ap.parse_args()
     K = tuple(int(x) for x in a.K.split(","))
     want = [m.strip() for m in a.models.split(",") if m.strip()]
 
-    tc, hist, tgt, n_items = load_split_a(a.split)
+    if a.window:
+        tc, hist, tgt, n_items, _tiers = load_split_b(a.split, a.window)
+        track = f"temporal/{a.window}"
+    else:
+        tc, hist, tgt, n_items = load_split_a(a.split)
+        track = "leave-one-out"
+    out_path = a.out or os.path.join(
+        ROOT, "results",
+        f"baseline_splitB_{a.window}.json" if a.window else "baseline_splitA_loo.json")
+
+    n_tgt_all = len(tgt)
     users = [u for u in tgt if u in hist]
+    # Temporal 에서는 그 윈도우에 학습 이력이 없는 테스트 유저가 많다.
+    # 이력이 없으면 협업필터 계열은 애초에 예측을 못 하므로 채점에서 뺀다.
+    # 몇 명을 뺐는지 반드시 남긴다 — 트랙 간 유저 수가 다르면 비교가 깨진다.
+    dropped = n_tgt_all - len(users)
+    tgt = {u: tgt[u] for u in users}
     hist = {u: hist[u] for u in users}
     ev = Evaluator(tc, n_items, tail_frac=0.5)
     X, ulist, _ = to_csr(hist, n_items)
 
-    print(f"===== {os.path.basename(a.split)} / leave-one-out "
+    print(f"===== {os.path.basename(a.split)} / {track} "
           f"| 유저 {len(users):,} 아이템 {n_items:,} "
           f"타깃 {sum(len(v) for v in tgt.values()):,} =====")
+    if a.window:
+        print(f"  학습 이력이 없어 제외한 테스트 유저 {dropped:,}명 "
+              f"(전체 {n_tgt_all:,}명 중 {100*dropped/max(1,n_tgt_all):.1f}%)")
     print(f"  롱테일(하위 50%) 아이템 {len(ev.tail):,}개 · 학습 상호작용 {sum(tc.values()):,}건")
 
     res, peruser = {}, {}
@@ -70,7 +90,9 @@ def main():
         m["label"] = label
         m["sec"] = round(dt, 1)
         m["_source"] = {"split_file": os.path.basename(a.split), "tail_frac": 0.5,
-                        "exclude_seen": True}
+                        "exclude_seen": True, "track": "temporal" if a.window else "loo",
+                        "window": a.window, "n_user_scored": len(users),
+                        "n_user_dropped_no_history": dropped}
         res[label] = m
         peruser[label] = {u: d["ndcg"] for u, d in pu[max(K)].items()}
         print(f"  {label:12s} R@20 {m['recall@20']:.4f}  N@20 {m['ndcg@20']:.4f}  "
@@ -88,10 +110,10 @@ def main():
               f"diff={bs['mean_diff']:+.5f} CI95={bs['ci95']} p={bs['p_value_gt0']:.4f}")
         res["_test_EASE_vs_KNN"] = bs
 
-    os.makedirs(os.path.dirname(a.out), exist_ok=True)
-    with open(a.out, "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(res, f, ensure_ascii=False, indent=1)
-    print(f"\n저장: {a.out}")
+    print(f"\n저장: {out_path}")
 
 
 if __name__ == "__main__":

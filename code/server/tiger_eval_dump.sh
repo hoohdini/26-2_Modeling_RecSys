@@ -41,7 +41,10 @@
 set -euo pipefail
 BASE=/mnt/data1/dsl05
 PY=$BASE/miniconda3/envs/grid/bin/python
-DATA=$BASE/recsys/grid_data/beauty_A
+# DATA 를 바꾸면 트랙이 바뀐다. 학습과 덤프에 반드시 같은 값을 줄 것.
+#   LOO      grid_data/beauty_A
+#   Temporal grid_data/beauty_B/W5   (윈도우 하나가 데이터셋 하나)
+DATA=${DATA:-$BASE/recsys/grid_data/beauty_A}
 
 TAG=${TAG:?TAG 필요}
 SID=${SID:-$BASE/recsys/sid_out/baseline/L4/infer/pickle/merged_predictions_tensor.pt}

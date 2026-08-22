@@ -1,0 +1,251 @@
+{
+ "Random": {
+  "n_user_eval": 6868,
+  "n_target": 18861,
+  "recall@10": 0.00067,
+  "hr@10": 0.002038,
+  "ndcg@10": 0.000422,
+  "aplt@10": 0.500888,
+  "coverage@10": 0.997273,
+  "exposure_gini@10": 0.230557,
+  "tail_exposure@10": 0.500888,
+  "recall@20": 0.001304,
+  "hr@20": 0.004077,
+  "ndcg@20": 0.000628,
+  "aplt@20": 0.499403,
+  "coverage@20": 1.0,
+  "exposure_gini@20": 0.1648,
+  "tail_exposure@20": 0.499403,
+  "recall@50": 0.003237,
+  "hr@50": 0.009755,
+  "ndcg@50": 0.001121,
+  "aplt@50": 0.50037,
+  "coverage@50": 1.0,
+  "exposure_gini@50": 0.104434,
+  "tail_exposure@50": 0.50037,
+  "bucket_recall@50": {
+   "mid": {
+    "n": 4809,
+    "recall": 0.003327
+   },
+   "low": {
+    "n": 3317,
+    "recall": 0.003015
+   },
+   "zero-shot": {
+    "n": 5134,
+    "recall": 0.00409
+   },
+   "few-shot": {
+    "n": 2847,
+    "recall": 0.003161
+   },
+   "head": {
+    "n": 2754,
+    "recall": 0.003994
+   }
+  },
+  "COLD_recall@50": 0.00354,
+  "COLD_n_target": 11298,
+  "label": "Random",
+  "sec": 8.3,
+  "_source": {
+   "split_file": "Beauty_split_B.pkl",
+   "tail_frac": 0.5,
+   "exclude_seen": true,
+   "track": "temporal",
+   "window": "W4",
+   "n_user_scored": 6868,
+   "n_user_dropped_no_history": 4621
+  }
+ },
+ "MostPopular": {
+  "n_user_eval": 6868,
+  "n_target": 18861,
+  "recall@10": 0.002812,
+  "hr@10": 0.006989,
+  "ndcg@10": 0.001323,
+  "aplt@10": 0.0,
+  "coverage@10": 0.00157,
+  "exposure_gini@10": 0.999158,
+  "tail_exposure@10": 0.0,
+  "recall@20": 0.005946,
+  "hr@20": 0.016308,
+  "ndcg@20": 0.002415,
+  "aplt@20": 0.0,
+  "coverage@20": 0.003306,
+  "exposure_gini@20": 0.998324,
+  "tail_exposure@20": 0.0,
+  "recall@50": 0.008474,
+  "hr@50": 0.021404,
+  "ndcg@50": 0.002994,
+  "aplt@50": 0.0,
+  "coverage@50": 0.007768,
+  "exposure_gini@50": 0.995821,
+  "tail_exposure@50": 0.0,
+  "bucket_recall@50": {
+   "mid": {
+    "n": 4809,
+    "recall": 0.0
+   },
+   "low": {
+    "n": 3317,
+    "recall": 0.0
+   },
+   "zero-shot": {
+    "n": 5134,
+    "recall": 0.0
+   },
+   "few-shot": {
+    "n": 2847,
+    "recall": 0.0
+   },
+   "head": {
+    "n": 2754,
+    "recall": 0.055919
+   }
+  },
+  "COLD_recall@50": 0.0,
+  "COLD_n_target": 11298,
+  "label": "MostPopular",
+  "sec": 2.0,
+  "_source": {
+   "split_file": "Beauty_split_B.pkl",
+   "tail_frac": 0.5,
+   "exclude_seen": true,
+   "track": "temporal",
+   "window": "W4",
+   "n_user_scored": 6868,
+   "n_user_dropped_no_history": 4621
+  }
+ },
+ "ItemKNN": {
+  "n_user_eval": 6868,
+  "n_target": 18861,
+  "recall@10": 0.004994,
+  "hr@10": 0.010775,
+  "ndcg@10": 0.002933,
+  "aplt@10": 0.379819,
+  "coverage@10": 0.620775,
+  "exposure_gini@10": 0.760978,
+  "tail_exposure@10": 0.379819,
+  "recall@20": 0.007712,
+  "hr@20": 0.017618,
+  "ndcg@20": 0.003801,
+  "aplt@20": 0.343797,
+  "coverage@20": 0.663251,
+  "exposure_gini@20": 0.734242,
+  "tail_exposure@20": 0.343797,
+  "recall@50": 0.014104,
+  "hr@50": 0.032178,
+  "ndcg@50": 0.005394,
+  "aplt@50": 0.291476,
+  "coverage@50": 0.673333,
+  "exposure_gini@50": 0.729447,
+  "tail_exposure@50": 0.291476,
+  "bucket_recall@50": {
+   "mid": {
+    "n": 4809,
+    "recall": 0.02121
+   },
+   "low": {
+    "n": 3317,
+    "recall": 0.014471
+   },
+   "zero-shot": {
+    "n": 5134,
+    "recall": 0.0
+   },
+   "few-shot": {
+    "n": 2847,
+    "recall": 0.006322
+   },
+   "head": {
+    "n": 2754,
+    "recall": 0.029775
+   }
+  },
+  "COLD_recall@50": 0.005842,
+  "COLD_n_target": 11298,
+  "label": "ItemKNN",
+  "sec": 0.9,
+  "_source": {
+   "split_file": "Beauty_split_B.pkl",
+   "tail_frac": 0.5,
+   "exclude_seen": true,
+   "track": "temporal",
+   "window": "W4",
+   "n_user_scored": 6868,
+   "n_user_dropped_no_history": 4621
+  }
+ },
+ "EASE_R": {
+  "n_user_eval": 6868,
+  "n_target": 18861,
+  "recall@10": 0.009755,
+  "hr@10": 0.023005,
+  "ndcg@10": 0.006731,
+  "aplt@10": 0.083023,
+  "coverage@10": 0.568548,
+  "exposure_gini@10": 0.826357,
+  "tail_exposure@10": 0.083023,
+  "recall@20": 0.014987,
+  "hr@20": 0.03378,
+  "ndcg@20": 0.008338,
+  "aplt@20": 0.089837,
+  "coverage@20": 0.636146,
+  "exposure_gini@20": 0.79831,
+  "tail_exposure@20": 0.089837,
+  "recall@50": 0.022798,
+  "hr@50": 0.052126,
+  "ndcg@50": 0.0103,
+  "aplt@50": 0.090874,
+  "coverage@50": 0.662507,
+  "exposure_gini@50": 0.786681,
+  "tail_exposure@50": 0.090874,
+  "bucket_recall@50": {
+   "mid": {
+    "n": 4809,
+    "recall": 0.025369
+   },
+   "low": {
+    "n": 3317,
+    "recall": 0.009949
+   },
+   "zero-shot": {
+    "n": 5134,
+    "recall": 0.0
+   },
+   "few-shot": {
+    "n": 2847,
+    "recall": 0.004215
+   },
+   "head": {
+    "n": 2754,
+    "recall": 0.088962
+   }
+  },
+  "COLD_recall@50": 0.003983,
+  "COLD_n_target": 11298,
+  "label": "EASE_R",
+  "sec": 15.2,
+  "_source": {
+   "split_file": "Beauty_split_B.pkl",
+   "tail_frac": 0.5,
+   "exclude_seen": true,
+   "track": "temporal",
+   "window": "W4",
+   "n_user_scored": 6868,
+   "n_user_dropped_no_history": 4621
+  }
+ },
+ "_test_EASE_vs_KNN": {
+  "n": 6868,
+  "mean_diff": 0.004906,
+  "ci95": [
+   0.003818,
+   0.006041
+  ],
+  "p_value_gt0": 0.0
+ }
+}
