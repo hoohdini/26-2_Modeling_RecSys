@@ -41,7 +41,7 @@ Amazon Beauty 원본
 
 | 주소 \ 모델 | TIGER (자기회귀) | MaskGR (마스크 확산) |
 |---|---|---|
-| **텍스트 주소** (베이스라인) | ① ✅ **완료** | ④ ⬜ 다음 |
+| **텍스트 주소** (베이스라인) | ① ✅ LOO·다양성 / ⬜ Temporal | ④ ⬜ 학습 대기 |
 | **G-SID** (그래프 증강) | ③ 🔄 진행 중 | ⑥ ⬜ |
 | **CRAB 주소** (코드북 재균형) | ② ⬜ | ⑤ ⬜ |
 | **CRAB + G-SID** | ⑧ ⬜ | ⑦ ⬜ |
@@ -60,7 +60,7 @@ CRAB 을 얹습니다.
 | 트랙 | 무엇을 재나 | 분할 | 진입점 |
 |---|---|---|---|
 | **LOO** | 정확도 (Recall@5/@10, NDCG@10) | `Beauty_split_A.pkl` | `code/tiger_to_eval.py` |
-| **Temporal** | 시간이 흐를 때 콜드 아이템을 잡나 | `Beauty_split_B.pkl` 윈도우별 | `code/tiger_to_eval.py --window W5` |
+| **Temporal** | 시간이 흐를 때 콜드 아이템을 잡나 | `Beauty_split_B.pkl` W3/W4/W5 | `code/tiger_to_eval.py --window W5` |
 | **다양성** | 롱테일 노출·커버리지·도달가능성 | LOO/Temporal 덤프 재활용 | 같은 도구가 함께 출력 |
 
 **컷오프는 전 지표 @10** 으로 통일했습니다(콜드 축만 @50). 다양성 대표축의 정식 명칭은
@@ -93,7 +93,7 @@ NDCG@10  0.0016        APLT@10  0.0176
 | G-SID 주소 (③) | 🔄 진행 중 |
 | MaskGR 파이프라인 | ✅ 준비 완료 — 실행 대기 |
 | CRAB 주소 | 🔄 파이프라인 정리 중 |
-| Temporal 분할 (Split B) | 🔄 **밀도 가중 분할로 재작업 중** |
+| Temporal 분할 (Split B) | ✅ **재전처리 완료** — W3/W4/W5 전부 학습 가능 |
 
 **TIGER 베이스라인 (①, 4단계 SID · 전수 22,363명)**
 
@@ -113,11 +113,13 @@ NDCG@10  0.0016        APLT@10  0.0176
 | 나는… | 읽을 것 |
 |---|---|
 | **처음 온 사람** | 이 README → [`docs/TEAM_RESULTS.md`](docs/TEAM_RESULTS.md) |
+| **텍스트 SID 3트랙을 채운다** | [`docs/RUNBOOK_텍스트SID_3트랙.md`](docs/RUNBOOK_텍스트SID_3트랙.md) — 남은 GPU 작업 7회 |
 | **다른 SID 로 실험한다** | [`docs/HANDOFF_트랙C_다양성평가.md`](docs/HANDOFF_트랙C_다양성평가.md) — 내 실행에 지표 붙이는 법 |
 | **MaskGR 을 돌린다** | [`docs/HANDOFF_MaskGR.md`](docs/HANDOFF_MaskGR.md) |
 | **그래프 SID 담당** | [`docs/HANDOFF_graph_sid.md`](docs/HANDOFF_graph_sid.md) |
 | **전처리 담당** | [`docs/REQUEST_전처리_splitB.md`](docs/REQUEST_전처리_splitB.md) |
 | **다양성·롱테일 결과가 궁금** | [`docs/TRACK_C_보고서.md`](docs/TRACK_C_보고서.md) · [비교표](docs/TRACK_C_비교표.md) |
+| **재전처리로 뭐가 바뀌었나** | [`docs/SPLIT_재전처리_영향.md`](docs/SPLIT_재전처리_영향.md) — 실측 대조 |
 | **TIGER 재현 경위** | [`docs/TIGER_BASELINE_REPORT.md`](docs/TIGER_BASELINE_REPORT.md) |
 | **서버에 들어간다** | [`docs/SERVER_공동사용.md`](docs/SERVER_공동사용.md) · [`docs/GPU_서버_사용가이드.md`](docs/GPU_서버_사용가이드.md) 🔒 |
 | **코드를 고친다** | [`code/README.md`](code/README.md) — 의존 관계와 실행 순서 |
@@ -129,8 +131,10 @@ NDCG@10  0.0016        APLT@10  0.0176
 ```
 Data/              Amazon 2014 Beauty 원본 (meta, reviews 5-core)
 preprocessing/     전처리 코드 + 설계 문서
-Beauty_split_A.pkl LOO 분할 ★ 모든 평가의 기준. 경로가 코드 기본값이라 옮기지 말 것
-                   (Temporal 분할 Beauty_split_B.pkl 은 재작업 중이라 아직 리포에 없습니다)
+Beauty_split_A.pkl LOO 분할 ★ 코드 기본값이라 옮기지 말 것
+Beauty_split_B.pkl Temporal 분할 — W3/W4/W5 (누적 train)
+Beauty_related_separate.pkl  관계종류 보존 그래프 (G-SID 가중치 실험용)
+                   셋 다 preprocessing/repreprocess.py 가 만드는 것과 같은 파일
 
 embeddings/        flan-t5-xl 아이템 임베딩 (12,101 × 2048)
 sid/               Semantic ID — L3/L4(텍스트), gsid_a01/gsid_a03(그래프)
