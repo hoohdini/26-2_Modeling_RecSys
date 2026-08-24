@@ -47,6 +47,12 @@ DATA=${DATA:-$BASE/recsys/grid_data/beauty_A}
 TAG=${TAG:?TAG 필요}
 SID=${SID:?SID 필요 — SID 텐서 절대경로}
 NH=${NH:-5}
+# 계층당 코드 수. MaskGR 설정(configs/model/experimental/...)에 vocab_size: 256 이
+# 하드코딩돼 있고 SID 텐서에서 유도하지 않는다. CRAB 주소는 코드가 305 까지 가므로
+# WIDTH=306 을 줘야 한다. 안 주면 discrete_diffusion_module 의
+#   assert masked_input.max() < num_embeddings_per_hierarchy
+# 에서 죽는다. (내부 stride = WIDTH + 1 — 마스크 토큰 한 칸이 더 붙는다)
+WIDTH=${WIDTH:-256}
 SEQ_LEN=${SEQ_LEN:-120}
 BATCH=${BATCH:-256}
 MAX_STEPS=${MAX_STEPS:-30000}     # TIGER 와 같은 예산에서 출발한다
@@ -58,7 +64,9 @@ CLIP=${CLIP:-1.0}
 SMOKE=${SMOKE:-0}
 FORCE=${FORCE:-0}
 
-if [ "$SMOKE" = "1" ]; then MAX_STEPS=50; VAL_EVERY=25; LIMIT_VAL=0.05; fi
+# IterableDataset 이라 limit_val_batches 는 1.0 이거나 정수여야 한다 (분수 금지).
+# 스모크에서 0.05 를 주면 lightning 이 MisconfigurationException 으로 죽는다.
+if [ "$SMOKE" = "1" ]; then MAX_STEPS=50; VAL_EVERY=25; LIMIT_VAL=3; fi
 
 OUTD=$BASE/recsys/maskgr_out/${TAG}
 if [ -d "$OUTD" ]; then
@@ -89,6 +97,7 @@ $PY -m src.train \
   paths.data_dir=$DATA \
   sid_data_path=$SID \
   model.num_hierarchies=$NH \
+  model.vocab_size=$WIDTH \
   seq_len=$SEQ_LEN \
   batch_size=$BATCH \
   exp_id=$TAG \
@@ -100,8 +109,8 @@ $PY -m src.train \
   trainer.max_steps=$MAX_STEPS \
   trainer.max_epochs=-1 \
   trainer.val_check_interval=$VAL_EVERY \
-  +trainer.limit_val_batches=$LIMIT_VAL \
-  +trainer.gradient_clip_val=$CLIP \
+  ++trainer.limit_val_batches=$LIMIT_VAL \
+  ++trainer.gradient_clip_val=$CLIP \
   optim.optimizer.lr=$LR \
   callbacks.model_checkpoint.dirpath=$OUTD/checkpoints \
   $DL_TR.batch_size_per_device=$BATCH \

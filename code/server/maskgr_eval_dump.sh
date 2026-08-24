@@ -46,6 +46,10 @@ DATA=${DATA:-$BASE/recsys/grid_data/beauty_A}
 TAG=${TAG:?TAG 필요}
 SID=${SID:?SID 필요 — SID 텐서 절대경로}
 NH=${NH:-5}
+# 학습 때 준 WIDTH 와 반드시 같아야 한다 (CRAB 주소는 306). 다르면 체크포인트가 안 실린다.
+# 덤프의 코드는 h*(WIDTH+1) 오프셋이 붙어 나오므로, 평가 전에 code/maskgr_to_tiger.py 로
+# --stride $((WIDTH+1)) --width $WIDTH 를 줘서 되돌려야 한다.
+WIDTH=${WIDTH:-256}
 CAND=${CAND:-200}
 BATCH=${BATCH:-256}
 SEQ_LEN=${SEQ_LEN:-120}
@@ -57,7 +61,12 @@ SCHED=${SCHED:-uniform}
 ITYPE=${ITYPE:-beam-search-generation}
 
 RUND=$BASE/recsys/maskgr_out/${TAG}
-CKPT=${CKPT:-$(ls -1t $RUND/checkpoints/*.ckpt 2>/dev/null | head -1)}
+# MaskGR 체크포인트 파일명 템플릿에 val/recall@5 의 "/" 가 들어가 있어서
+# checkpoints/<...-val>/recall@5=0.0345.ckpt 처럼 한 단계 더 들어간다.
+# checkpoints/*.ckpt 로는 절대 안 잡히고, set -e 때문에 ls 실패가 스크립트를
+# 가드( test -f "$CKPT" )에 닿기도 전에 죽인다 → find 로 재귀 탐색한다.
+# 스텝 번호가 0 패딩(step=029000)이라 이름순 정렬의 마지막이 최신이다.
+CKPT=${CKPT:-$(find $RUND/checkpoints -name '*.ckpt' 2>/dev/null | sort | tail -1)}
 SUFFIX="_c${CAND}_t${TEMP}_s${STEPS}"
 OUT=${OUT:-$RUND/eval_dump${SUFFIX}}
 
@@ -86,6 +95,7 @@ $PY -m src.maskgr_eval_dump \
   paths.data_dir=$DATA \
   sid_data_path=$SID \
   model.num_hierarchies=$NH \
+  model.vocab_size=$WIDTH \
   seq_len=$SEQ_LEN \
   model.diffusion_config.num_candidates=$CAND \
   model.diffusion_config.unmasking_temperature=$TEMP \
