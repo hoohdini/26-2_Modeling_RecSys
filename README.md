@@ -41,10 +41,10 @@ Amazon Beauty 원본
 
 | 주소 \ 모델 | TIGER (자기회귀) | MaskGR (마스크 확산) |
 |---|---|---|
-| **텍스트 주소** (베이스라인) | ① ✅ LOO·다양성 / ⬜ Temporal | ④ ⬜ 학습 대기 |
-| **G-SID** (그래프 증강) | ③ 🔄 진행 중 | ⑥ ⬜ |
-| **CRAB 주소** (코드북 재균형) | ② ⬜ | ⑤ ⬜ |
-| **CRAB + G-SID** | ⑧ ⬜ | ⑦ ⬜ |
+| **텍스트 주소** (베이스라인) | ① ✅ LOO·다양성 / 🔄 Temporal W5 | ④ ⬜ 학습 대기 (파이프라인 검증 완료) |
+| **G-SID** (그래프 증강) | ③ ✅ LOO·다양성 / 🔄 Temporal W5 | ⑥ ⬜ |
+| **CRAB 주소** (코드북 재균형) | ② ⬜ 주소 준비됨 | ⑤ ⬜ 주소 준비됨 |
+| **CRAB + G-SID** | ⑧ ⬜ 주소 준비됨 | ⑦ ⬜ 주소 준비됨 |
 
 > **왜 좌우를 다 채워야 하나**: ⑦(결합 주소 + 확산)이 좋게 나왔을 때
 > *"주소를 합쳐서 좋아진 건가, 확산 덕분인가"* 를 답하려면 **같은 주소를 TIGER 에도
@@ -52,6 +52,25 @@ Amazon Beauty 원본
 
 **베이스라인 정의**: GRID 원본 + gradient clipping (스텝 수만 조정). 그 위에 그래프 증강과
 CRAB 을 얹습니다.
+
+### 주소 자산 — 지금 쓸 수 있는 SID 6종
+
+②⑤⑦⑧ 은 **주소가 이미 다 만들어져 있고 학습만 남았습니다.**
+
+| 행 | SID 이름 | 정체 | `WIDTH` |
+|---|---|---|---|
+| 텍스트 | `baseline/L4` (= `sid/L4`) | GRID 원본 + clipping | 256 |
+| G-SID | `sid_T1_noTau_k0_b05` | **우리 튜닝식** (τ 없음 · κ 0 · β₀ 0.5) | 256 |
+| G-SID | `gsid_a05_centered_nahye` | **고전 가중치 블렌딩** (α=0.5, 중심화) | 256 |
+| CRAB | `crab_baseline` | 텍스트 + CRAB | **306** |
+| CRAB+G-SID | `crab_T1_noTau_k0_b05` | 우리 튜닝식 + CRAB | **306** |
+| CRAB+G-SID | `crab_gsid_a05_centered` | 고전 블렌딩 + CRAB | **306** |
+
+> ⚠️ **G-SID 는 2종이 나란히 갑니다.** `sid_T1_...` 이 우리 방식이고
+> `gsid_a05_centered_nahye` 가 비교용 고전 방식입니다. 이름만 보면 거꾸로 읽기 쉽습니다.
+>
+> ⚠️ **CRAB 주소는 `WIDTH=306` 을 넘겨야 합니다.** 토큰 분할로 코드 번호가 305 까지
+> 늘어나서, 기본값 256 으로 돌리면 인덱스 범위를 벗어나 즉시 죽습니다. → 아래 함정 4번
 
 ---
 
@@ -90,10 +109,26 @@ NDCG@10  0.0016        APLT@10  0.0176
 | 임베딩 · SID (텍스트, 3단계/4단계) | ✅ |
 | TIGER 베이스라인 (①) | ✅ |
 | 다양성 평가 하네스 + 파레토 곡선 인프라 | ✅ |
-| G-SID 주소 (③) | 🔄 진행 중 |
-| MaskGR 파이프라인 | ✅ 준비 완료 — 실행 대기 |
-| CRAB 주소 | 🔄 파이프라인 정리 중 |
+| G-SID 주소 | ✅ **확정 2종** — 우리 튜닝식 `T1` · 고전 블렌딩 `a05_centered` |
+| CRAB 주소 | ✅ **3종 생성 완료** — 텍스트 / 튜닝식+CRAB / 고전+CRAB |
+| MaskGR 파이프라인 | ✅ **서버 배포 + 환경 구축 + GPU 스모크 통과** |
 | Temporal 분할 (Split B) | ✅ **재전처리 완료** — W3/W4/W5 전부 학습 가능 |
+| Temporal 학습 (TIGER) | 🔄 **W5 진행 중** — 텍스트·`T1` 학습 완료(조기종료), `a05_centered` 대기 |
+
+**Temporal W5 학습 실측** (2026-08-24, `partition1` RTX 6000 Ada · 30k 예산에서 조기종료)
+
+| 조건 | 종료 step | 최저 val/loss | 소요 |
+|---|---|---|---|
+| `tg_text_W5` (텍스트) | 15,999 | 12.3521 @ 6,999 | 약 1시간 50분 |
+| `tg_T1_W5` (우리 튜닝식) | 15,999 | 12.0995 @ 6,999 | 약 1시간 45분 |
+
+> 두 조건 모두 **step 6,999 에서 검증 손실 최저**를 찍고 이후 개선이 없어 patience 8 로
+> 조기 종료했습니다. 30k 를 다 돌 필요가 없다는 뜻이라, 남은 윈도우 예산을 그만큼 줄여
+> 잡아도 됩니다.
+
+> ⚠️ **Temporal 은 지금 시드 1회입니다.** 노이즈 바닥(아래)보다 작은 차이는 주장할 수
+> 없는데, LOO 실측에서 `COLD_recall@50` 의 시드 간 차이가 **0.0044** 로 두 G-SID 사이
+> 격차(0.0026)보다 큽니다. 콜드 축 결론을 내려면 시드 2회가 필요합니다.
 
 **TIGER 베이스라인 (①, 4단계 SID · 전수 22,363명)**
 
@@ -117,6 +152,7 @@ NDCG@10  0.0016        APLT@10  0.0176
 | **다른 SID 로 실험한다** | [`docs/HANDOFF_트랙C_다양성평가.md`](docs/HANDOFF_트랙C_다양성평가.md) — 내 실행에 지표 붙이는 법 |
 | **MaskGR 을 돌린다** | [`docs/HANDOFF_MaskGR.md`](docs/HANDOFF_MaskGR.md) |
 | **그래프 SID 담당** | [`docs/HANDOFF_graph_sid.md`](docs/HANDOFF_graph_sid.md) |
+| **CRAB 주소 담당** | [`crab/README.md`](crab/README.md) — 재구현 근거·설정·미해결 과제 |
 | **전처리 담당** | [`docs/REQUEST_전처리_splitB.md`](docs/REQUEST_전처리_splitB.md) |
 | **다양성·롱테일 결과가 궁금** | [`docs/TRACK_C_보고서.md`](docs/TRACK_C_보고서.md) · [비교표](docs/TRACK_C_비교표.md) |
 | **재전처리로 뭐가 바뀌었나** | [`docs/SPLIT_재전처리_영향.md`](docs/SPLIT_재전처리_영향.md) — 실측 대조 |
@@ -137,8 +173,12 @@ Beauty_related_separate.pkl  관계종류 보존 그래프 (G-SID 가중치 실�
                    셋 다 preprocessing/repreprocess.py 가 만드는 것과 같은 파일
 
 embeddings/        flan-t5-xl 아이템 임베딩 (12,101 × 2048)
-sid/               Semantic ID — L3/L4(텍스트), gsid_a01/gsid_a03(그래프)
+sid/               Semantic ID
+                     L3/ L4/                텍스트 (베이스라인)
+                     gsid_*/                그래프 증강
+                     crab_*/                CRAB 적용분 ★ WIDTH=306
 Tokenization/      그래프 SID 생성·비교 스크립트
+crab/              CRAB 코드북 재균형 (crab_sid.py + README) — 후처리라 GPU 불필요
 
 GRID/              snap-research/GRID 스냅샷 (팀 패치 2건 반영) — 임베딩·SID·TIGER
 MaskGR/            snap-research/MaskGR 스냅샷 — 마스크 확산
@@ -159,7 +199,8 @@ _archive/          지금은 안 쓰는 파일 (지운 게 아님 → _archive/R
 import torch
 emb = torch.load("embeddings/beauty_A/merged_predictions_tensor.pt")  # (12101, 2048) 행=item_id
 sid = torch.load("sid/L4/sid_tensor.pt").T                            # (12101, 5)    행=item_id
-#   sid[i, :4] = 코드 4자리(0~255) / sid[i, 4] = 충돌 구분자(0부터)
+#   sid[i, :4] = 코드 4자리 / sid[i, 4] = 충돌 구분자(0부터)
+#   코드 범위는 SID 마다 다릅니다 — 텍스트·G-SID 0~255, CRAB 주소 0~305
 ```
 
 | SID 설정 | 코드만으로 유일 | 구분자 필요 | 아이템당 토큰 |
@@ -192,9 +233,24 @@ make baselines         # 고전 베이스라인 재계산
    **랜덤 가중치로 평가**하고 경고 한 줄만 남깁니다. `src/eval_dump.py` 를 쓰십시오.
 3. **TFRecord 는 split 당 1파일**이라 `num_workers=0` + `timeout=0` +
    `persistent_workers=false` 를 **세트로** 줘야 합니다. 안 그러면 워커가 굶어 죽습니다.
-4. **`num_hierarchies` = SID 텐서의 행 수**(4단계 → 5), `vocab_size` = NH × 256.
+4. **`num_hierarchies` = SID 텐서의 행 수**(4단계 → 5), `vocab_size` = NH × `WIDTH`.
+   `WIDTH` 는 **SID 마다 다릅니다** — 텍스트·G-SID 는 256(VOCAB 1280), **CRAB 주소는
+   306**(VOCAB 1530). CRAB 은 과인기 토큰을 쪼개면서 코드 번호를 305 까지 늘리므로,
+   256 으로 돌리면 임베딩 테이블 범위를 벗어나 즉시 죽습니다.
 5. **검증 표본을 셔플하지 않으면** 이력이 긴 유저만 뽑혀 검증 지표가 낙관적으로 나옵니다.
    전수 검증(`LIMIT_VAL=1.0`)이 26초면 끝나니 아낄 이유가 없습니다.
+6. **MaskGR 에서는 `+trainer.…` 가 아니라 `++trainer.…` 를 쓰십시오.**
+   `configs/experiment/discrete_diffusion_train.yaml` 이 `gradient_clip_val` 과
+   `limit_val_batches` 를 **이미 정의**하고 있어서, GRID 에서 하던 대로 `+`(추가)를 주면
+   *"Could not append to config"* 로 죽습니다. GRID 설정에는 이 키들이 없어 `+` 가 맞았습니다.
+7. **`limit_val_batches` 에 분수를 주지 마십시오.** 데이터셋이 `IterableDataset` 라
+   lightning 이 `1.0` 이거나 정수만 받습니다. `0.05` 같은 값은
+   `MisconfigurationException` 입니다.
+8. **MaskGR 은 실패해도 3번 재시도합니다**(`src/utils/restart_job.py`). 설정 오류처럼
+   재시도해도 안 고쳐지는 실패에서 GPU 슬롯을 그만큼 더 잡아먹습니다. 새 설정은
+   **CPU 스모크로 먼저** 걸러내는 편이 쌉니다 — `trainer=cpu` + `++trainer.precision=32`
+   로 학습 루프 진입까지는 GPU 없이 검증됩니다. (`beam_search_generation` 이
+   `device='cuda'` 하드코딩이라 검증 단계부터는 GPU 가 필요합니다.)
 
 ---
 
