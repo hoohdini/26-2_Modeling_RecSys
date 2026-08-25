@@ -1,0 +1,74 @@
+{
+ "mg_crab_a05c_A": {
+  "n_user_eval": 22363,
+  "n_target": 22363,
+  "recall@10": 0.050083,
+  "hr@10": 0.050083,
+  "ndcg@10": 0.024548,
+  "aplt@10": 0.016492,
+  "coverage@10": 0.159987,
+  "exposure_gini@10": 0.97319,
+  "tail_exposure@10": 0.016492,
+  "recall@20": 0.07897,
+  "hr@20": 0.07897,
+  "ndcg@20": 0.031792,
+  "aplt@20": 0.020904,
+  "coverage@20": 0.221387,
+  "exposure_gini@20": 0.961711,
+  "tail_exposure@20": 0.020903,
+  "recall@50": 0.134508,
+  "hr@50": 0.134508,
+  "ndcg@50": 0.042781,
+  "aplt@50": 0.029932,
+  "coverage@50": 0.333278,
+  "exposure_gini@50": 0.938618,
+  "tail_exposure@50": 0.029722,
+  "bucket_recall@50": {
+   "mid": {
+    "n": 8328,
+    "recall": 0.061599
+   },
+   "head": {
+    "n": 7838,
+    "recall": 0.309135
+   },
+   "low": {
+    "n": 4559,
+    "recall": 0.014258
+   },
+   "few-shot": {
+    "n": 1500,
+    "recall": 0.004667
+   },
+   "zero-shot": {
+    "n": 138,
+    "recall": 0.0
+   }
+  },
+  "COLD_recall@50": 0.011619,
+  "COLD_n_target": 6197,
+  "label": "mg_crab_a05c_A",
+  "_source": {
+   "pred_file": "eval/converted/mg_crab_a05c_A.pkl",
+   "sid_file": "../sid_out/crab_gsid_a05_centered/L4/sid_tensor.pt",
+   "split_file": "Beauty_split_A.pkl",
+   "track": "loo",
+   "window": null,
+   "exclude_seen": false,
+   "tail_frac": 0.5,
+   "n_user_pred": 22363,
+   "n_generated_slot": 4472600,
+   "n_slot_per_user": 200.0,
+   "n_invalid_sid": 0,
+   "invalid_sid_rate": 0.0,
+   "n_duplicate_item": 185589,
+   "len_after_filter_mean": 191.701,
+   "len_after_filter_min": 19,
+   "label_match_checked": 22363,
+   "label_match_rate": 1.0,
+   "n_seen_in_list": 50362,
+   "seen_rate": 0.011748,
+   "truncated_at": 200.0
+  }
+ }
+}
