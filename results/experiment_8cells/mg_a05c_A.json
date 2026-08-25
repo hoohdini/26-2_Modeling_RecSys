@@ -1,0 +1,74 @@
+{
+ "mg_a05c_A": {
+  "n_user_eval": 22363,
+  "n_target": 22363,
+  "recall@10": 0.048965,
+  "hr@10": 0.048965,
+  "ndcg@10": 0.024448,
+  "aplt@10": 0.01422,
+  "coverage@10": 0.135857,
+  "exposure_gini@10": 0.978474,
+  "tail_exposure@10": 0.01422,
+  "recall@20": 0.078523,
+  "hr@20": 0.078523,
+  "ndcg@20": 0.031905,
+  "aplt@20": 0.019072,
+  "coverage@20": 0.191554,
+  "exposure_gini@20": 0.968227,
+  "tail_exposure@20": 0.019072,
+  "recall@50": 0.132988,
+  "hr@50": 0.132988,
+  "ndcg@50": 0.042689,
+  "aplt@50": 0.026782,
+  "coverage@50": 0.293282,
+  "exposure_gini@50": 0.948941,
+  "tail_exposure@50": 0.026604,
+  "bucket_recall@50": {
+   "mid": {
+    "n": 8328,
+    "recall": 0.058838
+   },
+   "head": {
+    "n": 7838,
+    "recall": 0.309007
+   },
+   "low": {
+    "n": 4559,
+    "recall": 0.012722
+   },
+   "few-shot": {
+    "n": 1500,
+    "recall": 0.002667
+   },
+   "zero-shot": {
+    "n": 138,
+    "recall": 0.0
+   }
+  },
+  "COLD_recall@50": 0.010005,
+  "COLD_n_target": 6197,
+  "label": "mg_a05c_A",
+  "_source": {
+   "pred_file": "eval/converted/mg_a05c_A.pkl",
+   "sid_file": "../sid_out/gsid_a05_centered_nahye/L4/infer/pickle/merged_predictions_tensor.pt",
+   "split_file": "Beauty_split_A.pkl",
+   "track": "loo",
+   "window": null,
+   "exclude_seen": false,
+   "tail_frac": 0.5,
+   "n_user_pred": 22363,
+   "n_generated_slot": 4472600,
+   "n_slot_per_user": 200.0,
+   "n_invalid_sid": 0,
+   "invalid_sid_rate": 0.0,
+   "n_duplicate_item": 245189,
+   "len_after_filter_mean": 189.036,
+   "len_after_filter_min": 24,
+   "label_match_checked": 22363,
+   "label_match_rate": 1.0,
+   "n_seen_in_list": 47330,
+   "seen_rate": 0.011196,
+   "truncated_at": 200.0
+  }
+ }
+}
