@@ -1,0 +1,90 @@
+{
+ "tg_crab_text_W5": {
+  "n_user_eval": 7264,
+  "n_target": 21964,
+  "recall@10": 0.011521,
+  "hr@10": 0.028084,
+  "ndcg@10": 0.007143,
+  "aplt@10": 0.036165,
+  "coverage@10": 0.249814,
+  "exposure_gini@10": 0.947916,
+  "tail_exposure@10": 0.036165,
+  "recall@20": 0.018508,
+  "hr@20": 0.044191,
+  "ndcg@20": 0.009395,
+  "aplt@20": 0.04258,
+  "coverage@20": 0.332287,
+  "exposure_gini@20": 0.931734,
+  "tail_exposure@20": 0.04258,
+  "recall@50": 0.035124,
+  "hr@50": 0.079846,
+  "ndcg@50": 0.013685,
+  "aplt@50": 0.056696,
+  "coverage@50": 0.467813,
+  "exposure_gini@50": 0.902063,
+  "tail_exposure@50": 0.056696,
+  "bucket_recall@50": {
+   "head": {
+    "n": 3739,
+    "recall": 0.145761
+   },
+   "low": {
+    "n": 3173,
+    "recall": 0.006303
+   },
+   "zero-shot": {
+    "n": 8231,
+    "recall": 0.0
+   },
+   "few-shot": {
+    "n": 1588,
+    "recall": 0.003149
+   },
+   "mid": {
+    "n": 5233,
+    "recall": 0.025416
+   }
+  },
+  "COLD_recall@50": 0.001924,
+  "COLD_n_target": 12992,
+  "label": "tg_crab_text_W5",
+  "_source": {
+   "pred_file": "../tiger_out/tg_crab_text_W5/eval_dump_k200/test_predictions_rank0.pkl",
+   "sid_file": "../sid_out/crab_text_W5/L4/sid_tensor.pt",
+   "split_file": "Beauty_split_B.pkl",
+   "track": "temporal",
+   "window": "W5",
+   "exclude_seen": false,
+   "tail_frac": 0.5,
+   "n_user_pred": 7264,
+   "n_generated_slot": 1452800,
+   "n_slot_per_user": 200.0,
+   "n_invalid_sid": 16692,
+   "invalid_sid_rate": 0.01149,
+   "n_duplicate_item": 0,
+   "len_after_filter_mean": 197.702,
+   "len_after_filter_min": 62,
+   "n_seen_in_list": 16138,
+   "seen_rate": 0.011237,
+   "truncated_at": 200.0
+  },
+  "tier_recall@50": {
+   "normal": {
+    "n": 17047,
+    "recall": 0.039772
+   },
+   "rare": {
+    "n": 3877,
+    "recall": 0.004127
+   },
+   "unseen": {
+    "n": 13867,
+    "recall": 0.0
+   },
+   "very_rare": {
+    "n": 5022,
+    "recall": 0.001792
+   }
+  }
+ }
+}

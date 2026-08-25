@@ -72,11 +72,31 @@ CRAB 논문(arXiv 2604.05113) Section 4.1 재구현. 코드 미공개라 수식 
 내내 한 번도 안 쓰인다. `crab_baseline` · `crab_gsid_a01` · `crab_gsid_a03` ·
 `crab_T1_noTau_k0_b05` · `crab_gsid_a05_centered` 전부 동일하다. 조사 필요.
 
-**★ 지금 만든 CRAB 주소는 Temporal 트랙에 쓰면 안 된다.** 인기도를
-`A_interactions_long.csv`(LOO 전 기간) 로 계산했기 때문에, W3/W4/W5 에 그대로 쓰면
-**주소 체계 자체에 미래 인기 정보가 새어 들어간다.** 위 "설정" 표의 지적대로
-`--interactions-path` 를 `B_interactions_long.csv` 로 바꿔 **윈도우별로 다시 만들어야**
-한다. (`docs/RESULTS_실험표.md` 남은 일 4번)
+**★ Temporal 용 주소는 윈도우별로 따로 있다 (2026-08-25 해결).** `sid/crab_*/L4` 는
+인기도를 `A_interactions_long.csv`(LOO 전 기간) 로 계산한 것이라 **Temporal 에 쓰면
+주소 체계 자체에 미래 인기 정보가 새어 들어간다.** 윈도우별로 다시 만들어 두었다:
+
+```
+sid/crab_{text,T1,a05c}_{W4,W5}/L4/     ← Temporal 전용
+csv_export/dataset/B_interactions_long_{W4,W5}.csv   ← 그 인기도 원본
+```
+
+인기도 파일은 `Beauty_split_B.pkl` 의 `windows[W]["train_seq"]` 에서 뽑았고, 행 수가
+split 이 기록한 `n_train_interactions` 와 정확히 일치한다 (W4 79,342 · W5 119,070).
+
+**재생성한 주소는 LOO 판과 43.9~55.0% 의 아이템에서 코드가 다르다.** 누수가 이론상
+문제가 아니라 실제로 절반 가까이를 바꾸는 문제였다는 뜻이다.
+
+```bash
+python crab/crab_sid.py --embedding-path <emb.pt> --sid-path <sid.pt> \
+  --interactions-path csv_export/dataset/B_interactions_long_W5.csv \
+  --out-dir sid/crab_<주소>_W5/L4
+```
+
+> W5 결과는 `docs/RESULTS_실험표.md` 실험표 ③ 에 있다. **CRAB 이 텍스트 주소에서는
+> 다양성을 크게 개선하는데(APLT 0.0199→0.0362) 그래프 주소에 얹으면 오히려 나빠진다**
+> (G 고전 APLT 0.0497→0.0324). 두 처방이 겹치면 과교정되는 것으로 보이며, 위 "설정" 표의
+> `--tail-guard` 나 `--split-ratio` 를 그래프 주소에서는 다르게 잡아야 할 수 있다.
 
 **tail_guard가 한 번도 발동하지 않았다 (제외 0개).** 인기도 상위 토큰은 정의상 head가
 지배적이라 tail 비율 50%를 넘을 수가 없다. 즉 현재 threshold에서 head-tail 보호 장치는
