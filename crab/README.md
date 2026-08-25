@@ -58,6 +58,26 @@ CRAB 논문(arXiv 2604.05113) Section 4.1 재구현. 코드 미공개라 수식 
 
 ## 관찰 / 다음 할 일
 
+**★ `M=3` 인데 실제로는 2분할이다 (2026-08-25 확인).** `crab_split_history.json` 을 보면
+분할 75건(25토큰 × 3레벨) **전부** 자식 셋 중 하나가 비어 있다:
+
+```json
+{"level":0,"original_token":10,"M":3,"n_children":41,
+ "new_tokens":{"10":4701.0, "256":3765.0, "257":0.0}}
+                                           ^^^^^ 빈 토큰
+```
+
+그래서 토큰 수는 256→281(+25)인데 코드 번호는 305 까지 나가 **레벨당 25개가 죽은
+번호**다. 다운스트림은 `WIDTH=306` 으로 임베딩 행을 306개 잡으므로 그 25개는 학습
+내내 한 번도 안 쓰인다. `crab_baseline` · `crab_gsid_a01` · `crab_gsid_a03` ·
+`crab_T1_noTau_k0_b05` · `crab_gsid_a05_centered` 전부 동일하다. 조사 필요.
+
+**★ 지금 만든 CRAB 주소는 Temporal 트랙에 쓰면 안 된다.** 인기도를
+`A_interactions_long.csv`(LOO 전 기간) 로 계산했기 때문에, W3/W4/W5 에 그대로 쓰면
+**주소 체계 자체에 미래 인기 정보가 새어 들어간다.** 위 "설정" 표의 지적대로
+`--interactions-path` 를 `B_interactions_long.csv` 로 바꿔 **윈도우별로 다시 만들어야**
+한다. (`docs/RESULTS_실험표.md` 남은 일 4번)
+
 **tail_guard가 한 번도 발동하지 않았다 (제외 0개).** 인기도 상위 토큰은 정의상 head가
 지배적이라 tail 비율 50%를 넘을 수가 없다. 즉 현재 threshold에서 head-tail 보호 장치는
 사실상 비활성이다. `--tail-guard 0.2` 정도로 낮춰서 실제로 걸리는 토큰이 있는지 확인 필요.

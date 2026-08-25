@@ -39,7 +39,34 @@ MaskGR 저장소를 뜯어보니 **GRID와 규약이 그대로 겹칩니다.**
 | 생성 결과 전달 | `evaluator(marginal_probs, generated_ids, labels)` | 동일 | |
 | 생성 결과 모양 | `(B, C, H)` | 동일 | |
 
-그래서 **트랙 C 하네스(`tiger_to_eval.py` 이하)가 수정 없이 MaskGR 덤프를 읽습니다.**
+그래서 덤프의 **껍데기**(`list[dict]` · 키 `user_id`/`semantic_ids`/`label_sid`/`scores` ·
+shape `(C, H)`)는 TIGER 와 완전히 같습니다.
+
+> ⚠️ **2026-08-25 정정 — "수정 없이 읽는다"는 사실이 아니었습니다.**
+> 위 표는 설계 단계의 추정이었고, 실제로 MaskGR 덤프를 평가해 보니 **코드 값의
+> 좌표계가 다릅니다.**
+>
+> ```
+> TIGER   semantic_ids 범위 [0, 255]      계층별 원본 코드
+> MaskGR  semantic_ids 범위 [0, 1284]     계층 오프셋이 더해진 값 (h * 257 + c)
+> ```
+>
+> MaskGR 은 계층마다 코드 256 개 + **마스크 토큰 1 개 = 257 칸**을 씁니다
+> (`discrete_diffusion_module.py:73` — `num_embeddings_per_hierarchy = vocab_size + 1`).
+> 변환 없이 `tiger_to_eval.py` 에 넣으면 **invalid_sid_rate = 1.0 · 전 지표 0** 이 됩니다.
+>
+> **평가 전에 반드시 변환하십시오:**
+> ```bash
+> python code/maskgr_to_tiger.py <덤프.pkl> <변환본.pkl>                      # 일반 주소
+> python code/maskgr_to_tiger.py <덤프.pkl> <변환본.pkl> --stride 307 --width 306  # CRAB 주소
+> ```
+>
+> 검증 근거와 전체 결과는 `docs/RESULTS_실험표.md` 참고.
+
+또 하나, **MaskGR 은 어휘 크기를 SID 텐서에서 유도하지 않습니다.** TIGER 는
+`codebooks.max()+1` 로 유도하지만 MaskGR 은 설정의 `vocab_size: 256` 을 그대로 씁니다.
+CRAB 처럼 코드가 255 를 넘는 주소는 `maskgr_train.sh` · `maskgr_eval_dump.sh` 에
+**`WIDTH=306` 을 넘겨야** 합니다. 안 주면 `assert masked_input.max() < ...` 에서 죽습니다.
 
 ---
 
