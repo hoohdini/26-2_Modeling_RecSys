@@ -1,0 +1,2 @@
+﻿n_items,unique_by_code_only,unique_by_code_only_pct,collided_items,collided_pct,need_dedup_digit,need_dedup_pct,max_dedup,max_group,codes_used_per_level,min_level_bits,level_bits,sid_all_unique
+12101,10551,87.19,1550,12.81,959,7.92,20,21,256/256/256/256,7.27,7.3/7.32/7.36/7.27,1
