@@ -1,0 +1,156 @@
+=== finish_v4 시작 2026-09-18 12:14:28 ===
+  skip jobs_text_v4_s42
+  skip jobs_gsid_b10_v4_s42
+  skip jobs_text_v4_s7
+  skip jobs_gsid_b10_v4_s7
+  skip jobs_text_v4_s13
+  skip jobs_gsid_b10_v4_s13
+  채점 jobs_text_v4_s3
+  COLD_recall@50 = 0.0499  (n=3,149)
+
+저장: results_jobs_v4/jobs_text_v4_s3.json
+  채점 jobs_gsid_b10_v4_s3
+  COLD_recall@50 = 0.0432  (n=3,149)
+
+저장: results_jobs_v4/jobs_gsid_b10_v4_s3.json
+  채점 jobs_text_v4_s21
+  COLD_recall@50 = 0.0349  (n=3,149)
+
+저장: results_jobs_v4/jobs_text_v4_s21.json
+  채점 jobs_gsid_b10_v4_s21
+  COLD_recall@50 = 0.0502  (n=3,149)
+
+저장: results_jobs_v4/jobs_gsid_b10_v4_s21.json
+  채점 jobs_text_v4_s99
+  COLD_recall@50 = 0.0381  (n=3,149)
+
+저장: results_jobs_v4/jobs_text_v4_s99.json
+  채점 jobs_gsid_b10_v4_s99
+  COLD_recall@50 = 0.0483  (n=3,149)
+
+저장: results_jobs_v4/jobs_gsid_b10_v4_s99.json
+  skip jobs_rewired_v4_s42
+  skip jobs_rewired_v4_s7
+  skip jobs_rewired_v4_s13
+--- 완료된 결과 ---
+jobs_gsid_b10_v4_s13.json
+jobs_gsid_b10_v4_s21.json
+jobs_gsid_b10_v4_s3.json
+jobs_gsid_b10_v4_s42.json
+jobs_gsid_b10_v4_s7.json
+jobs_gsid_b10_v4_s99.json
+jobs_rewired_v4_s13.json
+jobs_rewired_v4_s42.json
+jobs_rewired_v4_s7.json
+jobs_text_v4_s13.json
+jobs_text_v4_s21.json
+jobs_text_v4_s3.json
+jobs_text_v4_s42.json
+jobs_text_v4_s7.json
+jobs_text_v4_s99.json
+
+################ 구인구직 v4 · 시드 42,7,13 (+3,21,99 있으면) ################
+==============================================================================
+v4 6시드 판정 — 생성 2026-09-18 12:23
+MAX_STEPS=30000 · PATIENCE=1000(비활성) · LIMIT_VAL=150(검증 51%)
+==============================================================================
+
+[원자료]  (완성된 시드: 42, 7, 13, 3, 21, 99)
+cell                        recall@10      ndcg@10    recall@50      ndcg@50      aplt@50  coverage@10COLD_recall@50
+jobs_text_v4_s42              0.05877      0.02865      0.19027      0.05671      0.05769      0.25467      0.04827
+jobs_text_v4_s7               0.05843      0.02858      0.19937      0.05879      0.03640      0.24150      0.03684
+jobs_text_v4_s13              0.05969      0.02946      0.19588      0.05852      0.03232      0.23225      0.02826
+jobs_text_v4_s3               0.05665      0.02787      0.18936      0.05635      0.05647      0.26350      0.04986
+jobs_text_v4_s21              0.05969      0.02936      0.19720      0.05864      0.03656      0.30083      0.03493
+jobs_text_v4_s99              0.06295      0.03111      0.20006      0.06045      0.03954      0.28133      0.03811
+jobs_gsid_b10_v4_s42          0.06529      0.03193      0.21757      0.06448      0.04362      0.20092      0.04859
+jobs_gsid_b10_v4_s7           0.06495      0.03154      0.21288      0.06318      0.04770      0.36275      0.06224
+jobs_gsid_b10_v4_s13          0.06478      0.03233      0.20893      0.06310      0.04259      0.24975      0.04319
+jobs_gsid_b10_v4_s3           0.06438      0.03168      0.21345      0.06368      0.04176      0.24617      0.04319
+jobs_gsid_b10_v4_s21          0.06718      0.03291      0.21345      0.06418      0.05016      0.36317      0.05017
+jobs_gsid_b10_v4_s99          0.06833      0.03303      0.21425      0.06431      0.04866      0.24850      0.04827
+
+[시드 평균 ± sd]
+metric                          text               G-SID            효과
+recall@10           0.05936±0.00208    0.06582±0.00157      +0.00646
+ndcg@10             0.02917±0.00111    0.03224±0.00063      +0.00307
+recall@50           0.19536±0.00455    0.21342±0.00277      +0.01806
+ndcg@50             0.05824±0.00151    0.06382±0.00059      +0.00558
+aplt@50             0.04316±0.01103    0.04575±0.00353      +0.00259
+coverage@10         0.26235±0.02547    0.27854±0.06791      +0.01619
+COLD_recall@50      0.03938±0.00825    0.04927±0.00699      +0.00990
+
+[판정] 효과 vs 노이즈 바닥 — 통과 조건: 부호 일치 AND 최소효과 > 바닥
+metric               eff s42     eff s7    eff s13     eff s3    eff s21    eff s99         바닥    평균/바닥    최소/바닥  판정
+recall@10           +0.00652   +0.00652   +0.00509   +0.00773   +0.00750   +0.00538    0.00630     1.03     0.81  FAIL
+ndcg@10             +0.00328   +0.00296   +0.00287   +0.00380   +0.00355   +0.00193    0.00323     0.95     0.60  FAIL
+recall@50           +0.02730   +0.01351   +0.01305   +0.02409   +0.01625   +0.01419    0.01070     1.69     1.22  PASS
+ndcg@50             +0.00777   +0.00439   +0.00459   +0.00734   +0.00554   +0.00385    0.00411     1.36     0.94  FAIL
+aplt@50             -0.01406   +0.01130   +0.01027   -0.01471   +0.01361   +0.00912    0.02536     0.10     0.36  부호반전
+coverage@10         -0.05375   +0.12125   +0.01750   -0.01733   +0.06233   -0.03283    0.16225     0.10     0.11  부호반전
+COLD_recall@50      +0.00032   +0.02540   +0.01492   -0.00667   +0.01524   +0.01016    0.02159     0.46     0.01  부호반전
+
+[짝지은 검정] 같은 시드 안의 차이를 평균 — 시드 주효과가 상쇄된다
+  ※ 사전등록은 위의 바닥 방식이다. 이 절은 사후 추가한 표준 분석이며,
+     짝지음을 버린 바닥 방식이 설계상 보수적이라는 근거로 함께 싣는다.
+metric                  평균효과         sd       sem   t(df5)  유의(t>2.015)
+recall@10           +0.00646    0.00107   0.00044    14.78  YES
+ndcg@10             +0.00307    0.00066   0.00027    11.40  YES
+recall@50           +0.01806    0.00610   0.00249     7.26  YES
+ndcg@50             +0.00558    0.00163   0.00067     8.39  YES
+aplt@50             +0.00259    0.01323   0.00540     0.48  no
+coverage@10         +0.01619    0.06571   0.02682     0.60  no
+COLD_recall@50      +0.00990    0.01149   0.00469     2.11  YES
+
+[G1] 무작위 그래프 대조 (시드 42, 7, 13) — 통과 조건: 이득이 사라진다
+metric               gsid-text   rewired-text  판정
+recall@10             +0.00646       -0.00124  통과 — 이득 소멸
+ndcg@10               +0.00307       -0.00020  통과 — 이득 소멸
+recall@50             +0.01806       -0.00998  통과 — 이득 소멸
+ndcg@50               +0.00558       -0.00206  통과 — 이득 소멸
+aplt@50               +0.00259       -0.01504  통과 — 이득 소멸
+coverage@10           +0.01619       -0.08286  통과 — 이득 소멸
+COLD_recall@50        +0.00990       -0.01323  통과 — 이득 소멸
+
+[요약]
+  통과: recall@50
+  주 지표 ndcg@10: FAIL
+
+[참고] v2 (조기종료 미고정) 3시드 판정은 전 지표 FAIL 이었습니다.
+       text 기준선 best step 이 5,000 / 3,000 / 17,000 으로 흩어진 것이 원인입니다.
+
+=== 셀별 소요 ===
+           minchan_v4_sid_text    00:04:39  COMPLETED 
+           minchan_v4_sid_gsid    00:04:06  COMPLETED 
+            minchan_v4_sid_rew    00:04:50  COMPLETED 
+   minchan_t4_jobs_text_v4_s42    03:43:32  COMPLETED 
+   minchan_d4_jobs_text_v4_s42    00:03:04  COMPLETED 
+minchan_t4_jobs_gsid_b10_v4_s+    03:43:10  COMPLETED 
+minchan_d4_jobs_gsid_b10_v4_s+    00:03:03  COMPLETED 
+    minchan_t4_jobs_text_v4_s7    03:46:46  COMPLETED 
+    minchan_d4_jobs_text_v4_s7    00:03:04  COMPLETED 
+minchan_t4_jobs_gsid_b10_v4_s7    03:44:36  COMPLETED 
+minchan_d4_jobs_gsid_b10_v4_s7    00:03:02  COMPLETED 
+   minchan_t4_jobs_text_v4_s13    03:47:00  COMPLETED 
+   minchan_d4_jobs_text_v4_s13    00:03:05  COMPLETED 
+minchan_t4_jobs_gsid_b10_v4_s+    03:45:12  COMPLETED 
+minchan_d4_jobs_gsid_b10_v4_s+    00:03:01  COMPLETED 
+minchan_t4_jobs_rewired_v4_s42    03:46:25  COMPLETED 
+minchan_d4_jobs_rewired_v4_s42    00:03:01  COMPLETED 
+ minchan_t4_jobs_rewired_v4_s7    03:45:27  COMPLETED 
+ minchan_d4_jobs_rewired_v4_s7    00:03:07  COMPLETED 
+minchan_t4_jobs_rewired_v4_s13    03:48:44  COMPLETED 
+minchan_d4_jobs_rewired_v4_s13    00:02:59  COMPLETED 
+    minchan_t4_jobs_text_v4_s3    03:49:20  COMPLETED 
+    minchan_d4_jobs_text_v4_s3    00:05:55  COMPLETED 
+minchan_t4_jobs_gsid_b10_v4_s3    03:49:45  COMPLETED 
+minchan_d4_jobs_gsid_b10_v4_s3    00:05:32  COMPLETED 
+   minchan_t4_jobs_text_v4_s21    03:52:59  COMPLETED 
+   minchan_d4_jobs_text_v4_s21    00:07:30  COMPLETED 
+minchan_t4_jobs_gsid_b10_v4_s+    03:45:48  COMPLETED 
+minchan_d4_jobs_gsid_b10_v4_s+    00:07:52  COMPLETED 
+   minchan_t4_jobs_text_v4_s99    03:51:20  COMPLETED 
+   minchan_d4_jobs_text_v4_s99    00:06:53  COMPLETED 
+minchan_t4_jobs_gsid_b10_v4_s+    03:44:20  COMPLETED 
+minchan_d4_jobs_gsid_b10_v4_s+    00:06:48  COMPLETED 
+=== finish_v4 완료 2026-09-18 12:23:24 ===

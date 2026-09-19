@@ -1,0 +1,74 @@
+{
+ "jobs_text_v3_s3": {
+  "n_user_eval": 18741,
+  "n_target": 18741,
+  "recall@10": 0.072461,
+  "hr@10": 0.072461,
+  "ndcg@10": 0.035197,
+  "aplt@10": 0.027869,
+  "coverage@10": 0.317833,
+  "exposure_gini@10": 0.922637,
+  "tail_exposure@10": 0.027869,
+  "recall@20": 0.121071,
+  "hr@20": 0.121071,
+  "ndcg@20": 0.047379,
+  "aplt@20": 0.030369,
+  "coverage@20": 0.400083,
+  "exposure_gini@20": 0.898143,
+  "tail_exposure@20": 0.030369,
+  "recall@50": 0.225175,
+  "hr@50": 0.225175,
+  "ndcg@50": 0.06786,
+  "aplt@50": 0.035374,
+  "coverage@50": 0.511583,
+  "exposure_gini@50": 0.855267,
+  "tail_exposure@50": 0.035374,
+  "bucket_recall@50": {
+   "head": {
+    "n": 10331,
+    "recall": 0.320395
+   },
+   "mid": {
+    "n": 5161,
+    "recall": 0.148421
+   },
+   "few-shot": {
+    "n": 1139,
+    "recall": 0.04302
+   },
+   "low": {
+    "n": 1306,
+    "recall": 0.072741
+   },
+   "zero-shot": {
+    "n": 804,
+    "recall": 0.0
+   }
+  },
+  "COLD_recall@50": 0.044321,
+  "COLD_n_target": 3249,
+  "label": "jobs_text_v3_s3",
+  "_source": {
+   "pred_file": "recsys/tiger_out/jobs_text_v3_s3/eval_dump_k200/test_predictions_rank0.pkl",
+   "sid_file": "recsys/sid_out/jobs_text/L4/infer/pickle/merged_predictions_tensor.pt",
+   "split_file": "Jobs_split_A.pkl",
+   "track": "loo",
+   "window": null,
+   "exclude_seen": false,
+   "tail_frac": 0.5,
+   "n_user_pred": 18741,
+   "n_generated_slot": 3748200,
+   "n_slot_per_user": 200.0,
+   "n_invalid_sid": 14545,
+   "invalid_sid_rate": 0.003881,
+   "n_duplicate_item": 0,
+   "len_after_filter_mean": 199.224,
+   "len_after_filter_min": 137,
+   "label_match_checked": 18741,
+   "label_match_rate": 1.0,
+   "n_seen_in_list": 98644,
+   "seen_rate": 0.02642,
+   "truncated_at": 200.0
+  }
+ }
+}

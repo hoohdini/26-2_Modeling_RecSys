@@ -1,0 +1,149 @@
+=== finish_p2 시작 2026-09-19 00:56:16 ===
+  skip tp_text_W4_s42
+  skip tp_b10_W4_s42
+  skip tp_text_W5_s42
+  채점 tp_b10_W5_s42  <- tiger_out/tp_b10_W5_s42  (W5)
+
+저장: results_p2_temporal/tp_b10_W5_s42.json
+  채점 tp_text_W4_s7  <- tiger_out/tp_text_W4_s7  (W4)
+
+저장: results_p2_temporal/tp_text_W4_s7.json
+  skip tp_b10_W4_s7
+  채점 tp_text_W5_s7  <- tiger_out/tp_text_W5_s7  (W5)
+
+저장: results_p2_temporal/tp_text_W5_s7.json
+  채점 tp_b10_W5_s7  <- tiger_out/tp_b10_W5_s7  (W5)
+
+저장: results_p2_temporal/tp_b10_W5_s7.json
+  채점 tp_text_W4_s13  <- tiger_out/tp_text_W4_s13  (W4)
+
+저장: results_p2_temporal/tp_text_W4_s13.json
+  채점 tp_b10_W4_s13  <- tiger_out/tp_b10_W4_s13  (W4)
+
+저장: results_p2_temporal/tp_b10_W4_s13.json
+  채점 tp_text_W5_s13  <- tiger_out/tp_text_W5_s13  (W5)
+
+저장: results_p2_temporal/tp_text_W5_s13.json
+  채점 tp_b10_W5_s13  <- tiger_out/tp_b10_W5_s13  (W5)
+
+저장: results_p2_temporal/tp_b10_W5_s13.json
+--- results_p2_temporal ---
+tp_b10_W4_s13.json
+tp_b10_W4_s42.json
+tp_b10_W4_s7.json
+tp_b10_W5_s13.json
+tp_b10_W5_s42.json
+tp_b10_W5_s7.json
+tp_text_W4_s13.json
+tp_text_W4_s42.json
+tp_text_W4_s7.json
+tp_text_W5_s13.json
+tp_text_W5_s42.json
+tp_text_W5_s7.json
+
+################ Beauty Temporal W4·W5 n=3 (P2 · 규칙 C) ################
+====================================================================================================
+Temporal W4 · 결과 폴더 results_p2_temporal · 완성 시드 [42, 7, 13]
+
+[원자료]  (채점 유저 6868명)
+cell                 recall@10       ndcg@10     recall@50       ndcg@50       aplt@50   coverage@10COLD_recall@50
+tp_text_W4_s42         0.00862       0.00585       0.03261       0.01240       0.04180       0.21750       0.00292
+tp_text_W4_s7          0.00905       0.00613       0.03321       0.01266       0.04849       0.27452       0.00301
+tp_text_W4_s13         0.01031       0.00700       0.03398       0.01359       0.04020       0.20511       0.00239
+tp_b10_W4_s42          0.01330       0.00866       0.03992       0.01603       0.03308       0.18288       0.00487
+tp_b10_W4_s7           0.01401       0.00887       0.04028       0.01618       0.06629       0.29559       0.00788
+tp_b10_W4_s13          0.01396       0.00857       0.04079       0.01581       0.07300       0.32419       0.00841
+
+[시드 평균 ± sd · n=3]
+metric                             텍스트             튜닝식 β₀1.0
+recall@10             0.00933±0.00088      0.01376±0.00039
+ndcg@10               0.00633±0.00060      0.00870±0.00015
+recall@50             0.03327±0.00068      0.04033±0.00044
+ndcg@50               0.01288±0.00063      0.01601±0.00018
+aplt@50               0.04349±0.00440      0.05746±0.02138
+coverage@10           0.23238±0.03702      0.26755±0.07471
+COLD_recall@50        0.00277±0.00033      0.00705±0.00191
+
+[W4 · 그래프(튜닝식) − 텍스트]  규칙 C 통과 = 부호 3/3 일치 AND 평균차 > 바닥
+metric                  s42        s7       s13         평균         바닥        t     부호  판정
+recall@10          +0.00468  +0.00496  +0.00365   +0.00443    0.00169    11.15    3/3  PASS
+ndcg@10            +0.00281  +0.00274  +0.00157   +0.00237    0.00114     5.93    3/3  PASS
+recall@50          +0.00731  +0.00707  +0.00682   +0.00707    0.00136    50.05    3/3  PASS
+ndcg@50            +0.00363  +0.00352  +0.00222   +0.00312    0.00119     6.92    3/3  PASS
+aplt@50            -0.00873  +0.01781  +0.03280   +0.01396    0.03992     1.15    2/3  부호반전
+coverage@10        -0.03463  +0.02107  +0.11908   +0.03518    0.14131     0.78    2/3  부호반전
+COLD_recall@50     +0.00195  +0.00487  +0.00602   +0.00428    0.00354     3.53    3/3  PASS
+  짝지은 t 임계값(단측 α=.05, df=2): 2.920
+====================================================================================================
+Temporal W5 · 결과 폴더 results_p2_temporal · 완성 시드 [42, 7, 13]
+
+[원자료]  (채점 유저 7264명)
+cell                 recall@10       ndcg@10     recall@50       ndcg@50       aplt@50   coverage@10COLD_recall@50
+tp_text_W5_s42         0.01073       0.00684       0.03672       0.01397       0.04456       0.13073       0.00200
+tp_text_W5_s7          0.01037       0.00720       0.03442       0.01395       0.05881       0.17932       0.00231
+tp_text_W5_s13         0.01008       0.00671       0.03769       0.01413       0.03092       0.08074       0.00162
+tp_b10_W5_s42          0.01419       0.00917       0.04225       0.01697       0.06463       0.19883       0.00508
+tp_b10_W5_s7           0.01436       0.00906       0.04423       0.01721       0.06540       0.26353       0.00547
+tp_b10_W5_s13          0.01446       0.00922       0.04459       0.01754       0.07556       0.32733       0.00585
+
+[시드 평균 ± sd · n=3]
+metric                             텍스트             튜닝식 β₀1.0
+recall@10             0.01039±0.00032      0.01434±0.00013
+ndcg@10               0.00692±0.00026      0.00915±0.00008
+recall@50             0.03628±0.00168      0.04369±0.00126
+ndcg@50               0.01401±0.00010      0.01724±0.00029
+aplt@50               0.04476±0.01394      0.06853±0.00610
+coverage@10           0.13026±0.04930      0.26323±0.06425
+COLD_recall@50        0.00198±0.00035      0.00547±0.00038
+
+[W5 · 그래프(튜닝식) − 텍스트]  규칙 C 통과 = 부호 3/3 일치 AND 평균차 > 바닥
+metric                  s42        s7       s13         평균         바닥        t     부호  판정
+recall@10          +0.00346  +0.00399  +0.00438   +0.00394    0.00065    14.93    3/3  PASS
+ndcg@10            +0.00234  +0.00186  +0.00250   +0.00223    0.00049    11.56    3/3  PASS
+recall@50          +0.00553  +0.00981  +0.00690   +0.00741    0.00328     5.87    3/3  PASS
+ndcg@50            +0.00300  +0.00326  +0.00341   +0.00323    0.00057    26.68    3/3  PASS
+aplt@50            +0.02007  +0.00659  +0.04464   +0.02377    0.02788     2.13    3/3  바닥 아래
+coverage@10        +0.06809  +0.08421  +0.24659   +0.13296    0.12850     2.33    3/3  PASS
+COLD_recall@50     +0.00308  +0.00316  +0.00423   +0.00349    0.00077     9.36    3/3  PASS
+  짝지은 t 임계값(단측 α=.05, df=2): 2.920
+
+====================================================================================================
+[규칙 C 요약 · NDCG@10 · 그래프 − 텍스트]
+  LOO (참고, n=5): 평균차 +0.00436 · 바닥 0.00273 · PASS
+  W4 (n=3): 평균차 +0.00237 · 바닥 0.00114 · PASS
+  W5 (n=3): 평균차 +0.00223 · 바닥 0.00049 · PASS
+  → 규칙 C 통과 — 세 트랙(LOO·W4·W5) 3시드 재현 주장 가능
+
+주의: Temporal 은 내부 검증 정답이 placeholder 라 patience 8 조기종료가 이르게 걸린다(6k~9k 최적). 이는 LOO 와 같은 레시피의
+      일부이며 바꾸지 않았다. 멈춘 스텝은 보고서 끝의 '셀별 소요' 절에 있다. 1시드 수치는 인용하지 않는다.
+
+=== 셀별 소요 · 멈춘 스텝 ===
+    minchan_t2_tp_b10_W5_s42    01:48:17  COMPLETED 
+    minchan_d2_tp_b10_W5_s42    00:01:19  COMPLETED 
+    minchan_t2_tp_text_W5_s7    02:06:49  COMPLETED 
+    minchan_d2_tp_text_W5_s7    00:01:19  COMPLETED 
+     minchan_t2_tp_b10_W5_s7    02:12:44  COMPLETED 
+     minchan_d2_tp_b10_W5_s7    00:01:19  COMPLETED 
+   minchan_t2_tp_text_W5_s13    01:24:56  COMPLETED 
+   minchan_d2_tp_text_W5_s13    00:01:17  COMPLETED 
+    minchan_t2_tp_b10_W5_s13    02:32:32  COMPLETED 
+    minchan_d2_tp_b10_W5_s13    00:01:20  COMPLETED 
+    minchan_t2_tp_text_W4_s7    01:54:59  COMPLETED 
+    minchan_d2_tp_text_W4_s7    00:01:16  COMPLETED 
+   minchan_t2_tp_text_W4_s13    01:30:36  COMPLETED 
+   minchan_d2_tp_text_W4_s13    00:01:14  COMPLETED 
+    minchan_t2_tp_b10_W4_s13    01:53:58  COMPLETED 
+    minchan_d2_tp_b10_W4_s13    00:01:16  COMPLETED 
+  tp_b10_W4_s13    최적 ckpt step=011000 · 마지막 스텝 19000
+  tp_b10_W5_s13    최적 ckpt step=016000 · 마지막 스텝 24000
+  tp_b10_W5_s42    최적 ckpt step=008000 · 마지막 스텝 16000
+  tp_b10_W5_s7     최적 ckpt step=013000 · 마지막 스텝 21000
+  tp_text_W4_s13   최적 ckpt step=007000 · 마지막 스텝 15000
+  tp_text_W4_s7    최적 ckpt step=011000 · 마지막 스텝 19000
+  tp_text_W5_s13   최적 ckpt step=005000 · 마지막 스텝 13000
+  tp_text_W5_s7    최적 ckpt step=011000 · 마지막 스텝 19000
+  tg_text_W4       최적 ckpt step=007000 · 마지막 스텝 15000
+  tg_b10_W4        최적 ckpt step=006000 · 마지막 스텝 14000
+  tg_b10_W4_s7     최적 ckpt step=009000 · 마지막 스텝 17000
+  tg_text_W5       최적 ckpt step=008000 · 마지막 스텝 16000
+=== finish_p2 완료 2026-09-19 00:58:06 ===

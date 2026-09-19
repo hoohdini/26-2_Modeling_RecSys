@@ -1,0 +1,74 @@
+{
+ "ns_base_s21": {
+  "n_user_eval": 22363,
+  "n_target": 22363,
+  "recall@10": 0.06636,
+  "hr@10": 0.06636,
+  "ndcg@10": 0.036302,
+  "aplt@10": 0.04025,
+  "coverage@10": 0.337493,
+  "exposure_gini@10": 0.931089,
+  "tail_exposure@10": 0.04025,
+  "recall@20": 0.098064,
+  "hr@20": 0.098064,
+  "ndcg@20": 0.044294,
+  "aplt@20": 0.049622,
+  "coverage@20": 0.432609,
+  "exposure_gini@20": 0.909046,
+  "tail_exposure@20": 0.049622,
+  "recall@50": 0.153736,
+  "hr@50": 0.153736,
+  "ndcg@50": 0.055269,
+  "aplt@50": 0.067193,
+  "coverage@50": 0.58334,
+  "exposure_gini@50": 0.868794,
+  "tail_exposure@50": 0.067192,
+  "bucket_recall@50": {
+   "mid": {
+    "n": 8229,
+    "recall": 0.095759
+   },
+   "head": {
+    "n": 7537,
+    "recall": 0.315776
+   },
+   "low": {
+    "n": 4692,
+    "recall": 0.039642
+   },
+   "few-shot": {
+    "n": 1743,
+    "recall": 0.048193
+   },
+   "zero-shot": {
+    "n": 162,
+    "recall": 0.0
+   }
+  },
+  "COLD_recall@50": 0.040928,
+  "COLD_n_target": 6597,
+  "label": "ns_base_s21",
+  "_source": {
+   "pred_file": "recsys/tiger_out/ns_base_s21/eval_dump_k200/test_predictions_rank0.pkl",
+   "sid_file": "recsys/sid_out/baseline/L4/infer/pickle/merged_predictions_tensor.pt",
+   "split_file": "Beauty_split_A.pkl",
+   "track": "loo",
+   "window": null,
+   "exclude_seen": false,
+   "tail_frac": 0.5,
+   "n_user_pred": 22363,
+   "n_generated_slot": 4472600,
+   "n_slot_per_user": 200.0,
+   "n_invalid_sid": 50783,
+   "invalid_sid_rate": 0.011354,
+   "n_duplicate_item": 0,
+   "len_after_filter_mean": 197.729,
+   "len_after_filter_min": 47,
+   "label_match_checked": 22363,
+   "label_match_rate": 1.0,
+   "n_seen_in_list": 50365,
+   "seen_rate": 0.01139,
+   "truncated_at": 200.0
+  }
+ }
+}

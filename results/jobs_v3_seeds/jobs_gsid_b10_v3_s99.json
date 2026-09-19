@@ -1,0 +1,74 @@
+{
+ "jobs_gsid_b10_v3_s99": {
+  "n_user_eval": 18741,
+  "n_target": 18741,
+  "recall@10": 0.069687,
+  "hr@10": 0.069687,
+  "ndcg@10": 0.033391,
+  "aplt@10": 0.01509,
+  "coverage@10": 0.126583,
+  "exposure_gini@10": 0.970482,
+  "tail_exposure@10": 0.01509,
+  "recall@20": 0.121712,
+  "hr@20": 0.121712,
+  "ndcg@20": 0.046442,
+  "aplt@20": 0.017913,
+  "coverage@20": 0.191417,
+  "exposure_gini@20": 0.950987,
+  "tail_exposure@20": 0.017913,
+  "recall@50": 0.230671,
+  "hr@50": 0.230671,
+  "ndcg@50": 0.06798,
+  "aplt@50": 0.025796,
+  "coverage@50": 0.314167,
+  "exposure_gini@50": 0.90789,
+  "tail_exposure@50": 0.025796,
+  "bucket_recall@50": {
+   "head": {
+    "n": 10331,
+    "recall": 0.337334
+   },
+   "mid": {
+    "n": 5161,
+    "recall": 0.137958
+   },
+   "few-shot": {
+    "n": 1139,
+    "recall": 0.028095
+   },
+   "low": {
+    "n": 1306,
+    "recall": 0.071975
+   },
+   "zero-shot": {
+    "n": 804,
+    "recall": 0.0
+   }
+  },
+  "COLD_recall@50": 0.038781,
+  "COLD_n_target": 3249,
+  "label": "jobs_gsid_b10_v3_s99",
+  "_source": {
+   "pred_file": "recsys/tiger_out/jobs_gsid_b10_v3_s99/eval_dump_k200/test_predictions_rank0.pkl",
+   "sid_file": "recsys/sid_out/jobs_gsid_b10/L4/infer/pickle/merged_predictions_tensor.pt",
+   "split_file": "Jobs_split_A.pkl",
+   "track": "loo",
+   "window": null,
+   "exclude_seen": false,
+   "tail_frac": 0.5,
+   "n_user_pred": 18741,
+   "n_generated_slot": 3748200,
+   "n_slot_per_user": 200.0,
+   "n_invalid_sid": 45875,
+   "invalid_sid_rate": 0.012239,
+   "n_duplicate_item": 0,
+   "len_after_filter_mean": 197.552,
+   "len_after_filter_min": 92,
+   "label_match_checked": 18741,
+   "label_match_rate": 1.0,
+   "n_seen_in_list": 99599,
+   "seen_rate": 0.026902,
+   "truncated_at": 200.0
+  }
+ }
+}
