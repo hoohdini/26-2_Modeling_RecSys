@@ -10,7 +10,7 @@
 | [`00_발표_가이드.md`](00_발표_가이드.md) | 30초 스토리, 슬라이드 뼈대와 근거, 인용 금지 수치, 예상 질문 | 9/19 |
 | [`SHARE_GSID_결과요약.md`](SHARE_GSID_결과요약.md) | Beauty G-SID 결과 전부. β₀ 스윕 승자, 3시드, 실패한 대조 2건 | 8/31 |
 | [`RESULTS_실험표.md`](RESULTS_실험표.md) | Beauty 실험표 ①~⑤ 정본 (8칸 · Temporal · CRAB · 다이얼 · β₀ 스윕) | 8/28 |
-| [`JOBS_결과정리.md`](JOBS_결과정리.md) | 구인구직 v3 최종. 두 검정, 검정력, G1, zero-shot §8 | 9/2 |
+| [`JOBS_결과정리.md`](JOBS_결과정리.md) | 구인구직 결과 정본. v3 3시드(§1~9), **v3 6시드 판정(§10)**, **v4 재현(§11)**, zero-shot §8 | 9/19 |
 | [`DATASET_v4_파이프라인.md`](DATASET_v4_파이프라인.md) | 구인구직 v4 단계표, GPU 일정, 판정 규칙, 아직 없는 것 | 9/19 |
 | `../results/reports/` | 9/15 이후 자동 판정표 원문: P1·P3(GSID_WEEK), v4 n=6, P2 Temporal | 9/19 |
 | [`../data_gen/README.md`](../data_gen/README.md) | 구인구직 데이터셋 출처·스키마·재현·게이트·v4 | 9/19 |
