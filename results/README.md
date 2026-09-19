@@ -66,3 +66,18 @@
 - `truncated_at` 이 요구 컷오프보다 작으면 그 컷오프 지표는 **과소평가**된 값입니다.
   예: 유저당 생성 50개인데 `@50` 을 보면 사실상 전수라 다이얼에 반응하지 않습니다.
 - 결과 파일은 **덮어쓰기**로 생성됩니다. 스윕할 때는 `--out` 으로 이름을 나누십시오.
+
+---
+
+## 2차 발표 실험 트랙 (2026-09-15 ~ 09-19 · 서버 자동 채점본)
+
+전부 서버 `tiger_to_eval.py` 가 만든 ① 형식 JSON 이고, 판정표 원문은 `reports/` 에 있다. 제출 스크립트와 판정 규칙은 `code/run_*.sh` · `code/verdict_*.py` 머리 주석, 노션 1-1 페이지 참고.
+
+| 폴더 | 내용 | 판정 스크립트 | 보고서 |
+|---|---|---|---|
+| `gsid_week/` | Beauty LOO 텍스트 · 튜닝식 β₀1.0 · 고전 α0.7 × 시드 42·7·13·3·21 = 15 (P1, n=5) | `verdict_gsid_week.py` | `reports/GSID_WEEK_보고.txt` |
+| `jobs_v3_seeds/` | 구인구직 v3 추가 시드 3·21·99 × text/gsid = 6 (P3, 기존 3시드와 합쳐 n=6) | `verdict_v3.py` (JOBS_VER=v3 SEEDS=42,7,13,3,21,99) | 같은 파일 |
+| `jobs_v4/` | 구인구직 v4 text/gsid × 6시드 + rewired × 3시드 = 15 | `verdict_v3.py` (JOBS_VER=v4) | `reports/V4_보고.txt` |
+| `p2_temporal/` | Beauty Temporal W4·W5 × text/b10 × 시드 42·7·13 = 12 (P2, 30k 레시피 통일. 4셀은 기존 tg_* 덤프 재채점) | `verdict_p2_temporal.py` | `reports/P2_보고.txt` |
+
+요지: P1 그래프>텍스트 확정(규칙 A 튜닝식>고전은 바닥 아래로 종결). P3 v3 n=6 은 시드 99 부호반전으로 주지표 미확인. v4 n=6 은 짝지은 t 로 정확도 4지표 유의·G1 통과, 사전등록 바닥 방식은 n=6 에서 recall@50 만 통과. P2 규칙 C 통과(세 트랙 3시드 재현). P4·P5 는 9/19 저녁 예정.

@@ -45,6 +45,8 @@ import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data_gen", "out")
+IN = os.environ.get("JOBS_IN_DIR", OUT)
+OUT = os.environ.get("JOBS_OUT_DIR", OUT)
 
 BEAUTY_REF = {"MostPopular": 0.01207, "ItemKNN": 0.04253, "EASE_R": 0.05089}
 PASS_RATIO = 1.5
@@ -112,8 +114,9 @@ def evaluate(hist, tgt, n_items, V, K):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", default=os.path.join(OUT, "Jobs_split_A.pkl"))
-    ap.add_argument("--skill", default=os.path.join(OUT, "profile_skill.npy"))
+    ap.add_argument("--skill", default=os.path.join(IN, "profile_skill.npy"))
     ap.add_argument("--K", type=int, default=10)
+    ap.add_argument("--json", default=None, help="결과를 JSON 으로도 저장")
     a = ap.parse_args()
     try:
         sys.stdout.reconfigure(encoding="utf-8")
@@ -123,6 +126,11 @@ def main():
     hist, tgt, n_items, V = load(a.split, a.skill)
     res, n = evaluate(hist, tgt, n_items, V, a.K)
     pop = res["MostPopular"]
+    if a.json:
+        import json
+        json.dump({"K": a.K, "n_users": n, "n_items": n_items, "recall": res,
+                   "ratio": {k: (res[k] / pop if pop else 0.0) for k in res}},
+                  open(a.json, "w", encoding="utf-8"), indent=2, ensure_ascii=False)
 
     print(f"G-L 학습가능성 게이트 · {os.path.basename(a.split)} · 유저 {n:,} · 아이템 {n_items:,}")
     print()

@@ -1,0 +1,12 @@
+{
+  "version": "v3",
+  "note": "v3 = v2 데이터(2026-08-31 재캘리브레이션) + 학습 프로토콜 고정(2026-09-01). 데이터 생성 파라미터는 v2 와 같다.",
+  "simulate_interactions": {"temp": 0.15, "gamma": 0.20, "cand_pool": 12000, "seed": 42,
+                            "obs_noise": 14.0, "sigma_r": 10.0, "top_m": 20, "k_mu": 1.55, "k_sigma": 0.75,
+                            "delta": 0.9, "recruiters": 20000, "interactions": 200000},
+  "build_profiles": {"n": 12000, "seed": 42, "sigma": 12.0, "zipf_a": 0.6},
+  "graph": {"relations": ["related_occupation", "skill_vector", "career_path"], "demoted": ["same_occupation"],
+            "edges": 220918},
+  "training": {"max_steps": 30000, "patience": 1000, "limit_val": 150, "seeds": [42, 7, 13]},
+  "source": "docs/JOBS_데이터셋_구축기록.md, docs/JOBS_학습실패_원인분석.md §6, code/run_jobs_v3.sh"
+}

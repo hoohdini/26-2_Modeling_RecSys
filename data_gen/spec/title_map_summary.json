@@ -1,0 +1,20 @@
+{
+  "n_titles_mapped": 5000,
+  "freq_share_of_topN": 0.4411696461972147,
+  "thresholds": {
+    "auto": 0.6,
+    "review": 0.35
+  },
+  "band_count": {
+    "auto": 2266,
+    "review": 1930,
+    "none": 804
+  },
+  "band_freq_share": {
+    "auto": 0.637239279303677,
+    "review": 0.23781872284632444,
+    "none": 0.1249419978499986
+  },
+  "n_jobs_hit": 292,
+  "n_keco_hit": 256
+}
