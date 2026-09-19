@@ -1,0 +1,198 @@
+=== finish_p4p5 시작 2026-09-19 18:35:23 ===
+[P4]
+  채점 p4_base_15k_s42  <- tiger_out/p4_base_15k_s42/eval_dump_k200/test_predictions_rank0.pkl
+
+저장: results_p4/p4_base_15k_s42.json
+  채점 p4_b10_15k_s42  <- tiger_out/p4_b10_15k_s42/eval_dump_k200/test_predictions_rank0.pkl
+
+저장: results_p4/p4_b10_15k_s42.json
+  채점 p4_base_15k_s7  <- tiger_out/p4_base_15k_s7/eval_dump_k200/test_predictions_rank0.pkl
+
+저장: results_p4/p4_base_15k_s7.json
+  채점 p4_b10_15k_s7  <- tiger_out/p4_b10_15k_s7/eval_dump_k200/test_predictions_rank0.pkl
+
+저장: results_p4/p4_b10_15k_s7.json
+  채점 p4_base_45k_s42  <- tiger_out/p4_base_45k_s42/eval_dump_k200/test_predictions_rank0.pkl
+
+저장: results_p4/p4_base_45k_s42.json
+  채점 p4_b10_45k_s42  <- tiger_out/p4_b10_45k_s42/eval_dump_k200/test_predictions_rank0.pkl
+
+저장: results_p4/p4_b10_45k_s42.json
+  채점 p4_base_45k_s7  <- tiger_out/p4_base_45k_s7/eval_dump_k200/test_predictions_rank0.pkl
+
+저장: results_p4/p4_base_45k_s7.json
+  채점 p4_b10_45k_s7  <- tiger_out/p4_b10_45k_s7/eval_dump_k200/test_predictions_rank0.pkl
+
+저장: results_p4/p4_b10_45k_s7.json
+[P5]
+  채점 nsP_base_s42  <- tiger_out/clip_L4/eval_dump_k200_prefix/test_predictions_rank0.pkl
+
+저장: results_p5/nsP_base_s42.json
+  채점 nsP_base_s7  <- tiger_out/clip_L4_seed7/eval_dump_k200_prefix/test_predictions_rank0.pkl
+
+저장: results_p5/nsP_base_s7.json
+  채점 nsP_base_s13  <- tiger_out/clip_L4_seed13/eval_dump_k200_prefix/test_predictions_rank0.pkl
+
+저장: results_p5/nsP_base_s13.json
+  채점 nsP_b10_s42  <- tiger_out/tiger_noTau_k0_b10/eval_dump_k200_prefix/test_predictions_rank0.pkl
+
+저장: results_p5/nsP_b10_s42.json
+  채점 nsP_b10_s7  <- tiger_out/tiger_noTau_k0_b10_seed7/eval_dump_k200_prefix/test_predictions_rank0.pkl
+
+저장: results_p5/nsP_b10_s7.json
+  채점 nsP_b10_s13  <- tiger_out/tiger_noTau_k0_b10_seed13/eval_dump_k200_prefix/test_predictions_rank0.pkl
+
+저장: results_p5/nsP_b10_s13.json
+--- results_p4 ---
+p4_b10_15k_s42.json
+p4_b10_15k_s7.json
+p4_b10_45k_s42.json
+p4_b10_45k_s7.json
+p4_base_15k_s42.json
+p4_base_15k_s7.json
+p4_base_45k_s42.json
+p4_base_45k_s7.json
+--- results_p5 ---
+nsP_b10_s13.json
+nsP_b10_s42.json
+nsP_b10_s7.json
+nsP_base_s13.json
+nsP_base_s42.json
+nsP_base_s7.json
+
+################ P4 예산 민감도 (규칙 D) · P5 접두사 제약 ################
+====================================================================================================
+[P4] 학습 예산 민감도 · 규칙 D = 15k, 45k 각각 (b10 − base) NDCG@10 2/2 부호 일치
+
+--- 15k 스텝 · 완성 시드 [42, 7]
+cell                   recall@10       ndcg@10     recall@50       ndcg@50       aplt@50   coverage@10COLD_recall@50
+p4_base_15k_s42          0.06623       0.03592       0.16031       0.05636       0.05920       0.26411       0.03820
+p4_base_15k_s7           0.06618       0.03578       0.15722       0.05548       0.05960       0.26700       0.03714
+p4_b10_15k_s42           0.07919       0.04285       0.19277       0.06753       0.08195       0.34386       0.05897
+p4_b10_15k_s7            0.07660       0.04114       0.18495       0.06466       0.09352       0.36162       0.05245
+b10 − base                                                                                                          
+  recall@10        평균차 +0.01169 · 부호 일치 (2/2)
+  ndcg@10          평균차 +0.00614 · 부호 일치 (2/2)
+  recall@50        평균차 +0.03009 · 부호 일치 (2/2)
+  ndcg@50          평균차 +0.01017 · 부호 일치 (2/2)
+  aplt@50          평균차 +0.02834 · 부호 일치 (2/2)
+  coverage@10      평균차 +0.08718 · 부호 일치 (2/2)
+  COLD_recall@50   평균차 +0.01804 · 부호 일치 (2/2)
+
+--- 30k 스텝 · 완성 시드 [42, 7, 13, 3, 21]
+cell                   recall@10       ndcg@10     recall@50       ndcg@50       aplt@50   coverage@10COLD_recall@50
+ns_base_s42              0.06927       0.03845       0.15673       0.05737       0.07730       0.38865       0.04163
+ns_base_s7               0.06788       0.03682       0.15396       0.05540       0.08433       0.39013       0.04179
+ns_base_s13              0.06864       0.03764       0.15740       0.05686       0.07273       0.38369       0.04196
+ns_base_s3               0.06703       0.03702       0.14989       0.05498       0.08940       0.45633       0.04472
+ns_base_s21              0.06636       0.03630       0.15374       0.05527       0.06719       0.33749       0.04093
+ns_b10_s42               0.07879       0.04330       0.18052       0.06529       0.09835       0.47765       0.06406
+ns_b10_s7                0.07423       0.04106       0.17999       0.06405       0.10345       0.48062       0.06196
+ns_b10_s13               0.07776       0.04130       0.18562       0.06473       0.08518       0.37980       0.05906
+ns_b10_s3                0.07553       0.04057       0.17775       0.06290       0.10954       0.52120       0.06685
+ns_b10_s21               0.07816       0.04180       0.17913       0.06377       0.11082       0.48120       0.06048
+b10 − base                                                                                                          
+  recall@10        평균차 +0.00906 · 부호 일치 (5/5)
+  ndcg@10          평균차 +0.00436 · 부호 일치 (5/5)
+  recall@50        평균차 +0.02626 · 부호 일치 (5/5)
+  ndcg@50          평균차 +0.00817 · 부호 일치 (5/5)
+  aplt@50          평균차 +0.02328 · 부호 일치 (5/5)
+  coverage@10      평균차 +0.07684 · 부호 불일치 (4/5)
+  COLD_recall@50   평균차 +0.02028 · 부호 일치 (5/5)
+
+--- 45k 스텝 · 완성 시드 [42, 7]
+cell                   recall@10       ndcg@10     recall@50       ndcg@50       aplt@50   coverage@10COLD_recall@50
+p4_base_45k_s42          0.06609       0.03667       0.14748       0.05434       0.09688       0.48740       0.04305
+p4_base_45k_s7           0.06511       0.03533       0.14940       0.05371       0.09784       0.45765       0.04351
+p4_b10_45k_s42           0.07562       0.04187       0.17829       0.06411       0.11414       0.49674       0.06427
+p4_b10_45k_s7            0.07535       0.04098       0.17408       0.06239       0.10757       0.52211       0.06291
+b10 − base                                                                                                          
+  recall@10        평균차 +0.00988 · 부호 일치 (2/2)
+  ndcg@10          평균차 +0.00543 · 부호 일치 (2/2)
+  recall@50        평균차 +0.02775 · 부호 일치 (2/2)
+  ndcg@50          평균차 +0.00923 · 부호 일치 (2/2)
+  aplt@50          평균차 +0.01349 · 부호 일치 (2/2)
+  coverage@10      평균차 +0.03690 · 부호 일치 (2/2)
+  COLD_recall@50   평균차 +0.02031 · 부호 일치 (2/2)
+
+[규칙 D 요약 · NDCG@10 b10 − base]
+  15k: 평균차 +0.00614 · 부호 일치 · n=2  → PASS
+  30k: 평균차 +0.00436 · 부호 일치 · n=5
+  45k: 평균차 +0.00543 · 부호 일치 · n=2  → PASS
+  → 규칙 D 통과 — 그래프 이득이 예산(15k·30k·45k)과 무관
+  주의: 코사인 스케줄이 총 스텝에 맞춰 늘어나므로 45k 의 30k 시점은 30k 실행과 같지 않다. patience 8 조기종료로 45k 도 일찍 멈출 수 있다(멈춘 스텝은 보고서 끝).
+
+====================================================================================================
+[P5] 접두사 제약 디코딩 ON/OFF · Beauty LOO · 3시드 평균 (구인구직 §8 과 같은 표)
+  완성 시드: 텍스트 [42, 7, 13], 그래프 b10 [42, 7, 13]
+
+metric                   text OFF        text ON       gsid OFF        gsid ON
+recall@10                0.06860       0.06855       0.07693       0.07685
+ndcg@10                  0.03763       0.03762       0.04189       0.04183
+recall@50                0.15603       0.15576       0.18204       0.18185
+ndcg@50                  0.05654       0.05648       0.06469       0.06461
+aplt@50                  0.07812       0.08265       0.09566       0.10036
+coverage@10              0.38749       0.39283       0.44602       0.44971
+COLD_recall@50           0.04179       0.04345       0.06170       0.06372
+무효 SID 비율                0.01277       0.00000       0.01746       0.00000
+
+bucket_recall@50 · 3시드 평균 (n = 정답 수)
+bucket             n       text OFF        text ON       gsid OFF        gsid ON
+zero-shot        138       0.00000       0.00000       0.00000       0.00000
+few-shot        1500       0.05956       0.05431       0.06489       0.06081
+low             4559       0.03722       0.04092       0.06251       0.06699
+mid             8328       0.10222       0.10410       0.14205       0.14485
+head            7838       0.30352       0.31047       0.31968       0.32564
+
+[제약 ON 에서 그래프 − 텍스트 · 짝지은 t]  (같은 시드끼리)
+  recall@10        평균차 +0.00830 · t 8.50 (임계 2.920, df=2) · 유의
+  ndcg@10          평균차 +0.00421 · t 13.91 (임계 2.920, df=2) · 유의
+  recall@50        평균차 +0.02608 · t 19.20 (임계 2.920, df=2) · 유의
+  ndcg@50          평균차 +0.00813 · t 47.07 (임계 2.920, df=2) · 유의
+  COLD_recall@50   평균차 +0.02026 · t 11.21 (임계 2.920, df=2) · 유의
+
+[제약 ON − OFF · 조건별 순효과 · 3시드 평균]
+  텍스트        recall@10        -0.00004 (-0.1%)
+  텍스트        ndcg@10          -0.00001 (-0.0%)
+  텍스트        recall@50        -0.00027 (-0.2%)
+  텍스트        COLD_recall@50   +0.00166 (+4.0%)
+  그래프 b10    recall@10        -0.00007 (-0.1%)
+  그래프 b10    ndcg@10          -0.00006 (-0.1%)
+  그래프 b10    recall@50        -0.00019 (-0.1%)
+  그래프 b10    COLD_recall@50   +0.00202 (+3.3%)
+
+[요약] zero-shot recall@50: text OFF 0.00000 · ON 0.00000 · gsid OFF 0.00000 · ON 0.00000
+       구인구직에서는 그래프 + 제약 ON 에서만 0 을 벗어났다(0.00041). Beauty 의 zero-shot 정답은 138개뿐이라 한두 개 차이로 값이 흔들린다. 과장 금지.
+
+=== 셀별 소요 · 멈춘 스텝 ===
+            minchan_d5_clip_L4    00:32:05  COMPLETED 
+      minchan_d5_clip_L4_seed7    00:32:10  COMPLETED 
+     minchan_d5_clip_L4_seed13    00:32:16  COMPLETED 
+ minchan_d5_tiger_noTau_k0_b10    00:32:55  COMPLETED 
+minchan_d5_tiger_noTau_k0_b10+    00:32:05  COMPLETED 
+minchan_d5_tiger_noTau_k0_b10+    00:33:19  COMPLETED 
+   minchan_t4b_p4_base_15k_s42    01:36:51  COMPLETED 
+   minchan_d4b_p4_base_15k_s42    00:03:58  COMPLETED 
+    minchan_t4b_p4_b10_15k_s42    01:36:22  COMPLETED 
+    minchan_d4b_p4_b10_15k_s42    00:03:56  COMPLETED 
+    minchan_t4b_p4_base_15k_s7    01:36:22  COMPLETED 
+    minchan_d4b_p4_base_15k_s7    00:04:00  COMPLETED 
+     minchan_t4b_p4_b10_15k_s7    01:36:27  COMPLETED 
+     minchan_d4b_p4_b10_15k_s7    00:03:57  COMPLETED 
+   minchan_t4b_p4_base_45k_s42    04:47:58  COMPLETED 
+   minchan_d4b_p4_base_45k_s42    00:04:02  COMPLETED 
+    minchan_t4b_p4_b10_45k_s42    04:50:47  COMPLETED 
+    minchan_d4b_p4_b10_45k_s42    00:03:39  COMPLETED 
+    minchan_t4b_p4_base_45k_s7    04:48:19  COMPLETED 
+    minchan_d4b_p4_base_45k_s7    00:04:07  COMPLETED 
+     minchan_t4b_p4_b10_45k_s7    04:50:53  COMPLETED 
+     minchan_d4b_p4_b10_45k_s7    00:16:15  COMPLETED 
+  p4_b10_15k_s42     최적 ckpt step=014000 · 마지막 스텝 15000
+  p4_b10_15k_s7      최적 ckpt step=015000 · 마지막 스텝 15000
+  p4_b10_45k_s42     최적 ckpt step=039000 · 마지막 스텝 45000
+  p4_b10_45k_s7      최적 ckpt step=041000 · 마지막 스텝 45000
+  p4_base_15k_s42    최적 ckpt step=014000 · 마지막 스텝 15000
+  p4_base_15k_s7     최적 ckpt step=015000 · 마지막 스텝 15000
+  p4_base_45k_s42    최적 ckpt step=041000 · 마지막 스텝 45000
+  p4_base_45k_s7     최적 ckpt step=043000 · 마지막 스텝 45000
+=== finish_p4p5 완료 2026-09-19 18:44:23 ===
