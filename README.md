@@ -1,297 +1,125 @@
 # 26-2 DSL Modeling — RecSys (생성형 추천)
 
-> 📌 **발표 준비 중이라면 [`docs/00_발표_가이드.md`](docs/00_발표_가이드.md) 부터 보세요.**
-> 23개 문서 중 무엇이 최신이고 어느 주장이 어디에 있는지, 인용하면 안 되는 낡은 수치가
-> 무엇인지 한 장에 정리해 뒀습니다.
+Semantic ID 기반 생성형 추천(TIGER)이 **신규·비인기(콜드) 아이템을 추천하지 못하는 문제**를 다룹니다.
+아이템 주소(SID)를 텍스트 대신 **그래프로 증강(G-SID)** 하면 나아진다는 가설을
+Amazon Beauty 와 자체 구축한 구인구직 데이터셋, 두 도메인에서 검증합니다.
 
-Semantic ID 기반 생성형 추천에서 **신규·비인기(콜드) 아이템이 추천되지 않는 문제**를
-다룹니다. 주소(Semantic ID)를 바꿔 보고, 모델을 바꿔 보고, 그 결과를 정확도만이 아니라
-**다양성·롱테일 노출**까지 세 트랙으로 검증합니다.
-
----
-
-## 30초 요약 — 이 프로젝트가 하는 일
-
-```
-Amazon Beauty 원본
-        │
-        ▼  ① 전처리                preprocessing/preprocess.py
-   유저 22,363 · 상품 12,101 · 상호작용 198,502
-        │
-        ▼  ② 텍스트 → 벡터          GRID (flan-t5-xl 인코더)
-   임베딩 12,101 × 2048
-        │
-        ▼  ③ 벡터 → 주소            GRID (RQ-KMeans, 코드북 256)
-   SID  110-216-146-184  ← 상품 하나의 "주소". 앞자리가 큰 분류, 뒷자리가 세부
-        │
-        ├──────────────┬──────────────┬──────────────┐
-     텍스트 주소     그래프 증강      CRAB 적용        결합        ← ④ 주소를 바꾼다
-        └──────────────┴──────────────┴──────────────┘
-        │
-        ├───────────────────────────┐
-     TIGER (자기회귀)          MaskGR (마스크 확산)                ← ⑤ 모델을 바꾼다
-        └───────────────────────────┘
-        │
-        ▼  ⑥ 검증
-   LOO 트랙  ·  Temporal 트랙  ·  다양성 트랙
-```
-
-**핵심 주장**: 마스크 확산 논문들과 CRAB은 **다양성 지표를 하나도 보고하지 않았습니다.**
-우리 기여는 그 축을 재고, 추론 시점 파라미터 하나로 **정확도–롱테일 파레토 곡선**을 그린 것입니다.
+> 📌 **발표 준비라면 [`docs/00_발표_가이드.md`](docs/00_발표_가이드.md)**, 문서를 찾는다면 [`docs/README.md`](docs/README.md) 부터 보세요.
+> 이 README 는 **지금 상태와 진입점**만 적습니다. 수치의 정본은 각 결과 문서입니다. 최종 갱신 2026-09-19.
 
 ---
 
-## 실험 구조 — 주소 4종 × 모델 2종
+## 1. 지금까지 확인된 것 (2026-09-19)
 
-**8칸 전부 측정 완료입니다.** 수치·판정·재현 경로는 → **[`docs/RESULTS_실험표.md`](docs/RESULTS_실험표.md)**
+판정 규칙은 실행 전에 노션 계획 페이지에 고정했고, 아래는 그 규칙으로 자동 채점한 결과입니다.
+원문은 `results/reports/`, 요약은 `docs/00_발표_가이드.md` 1절.
 
-| 주소 \ 모델 | TIGER (자기회귀) | MaskGR (마스크 확산) |
+| 주장 | 근거 | 판정 |
 |---|---|---|
-| **텍스트 주소** (베이스라인) | ① ✅ N@10 0.0384 | ④ ✅ N@10 0.0239 |
-| **G-SID** (그래프 증강) | ③ ✅ N@10 **0.0425** (튜닝식) · 0.0415 (고전) | ⑥ ✅ N@10 0.0284 · 0.0244 |
-| **CRAB 주소** (코드북 재균형) | ② ✅ N@10 0.0361 | ⑤ ✅ N@10 0.0218 |
-| **CRAB + G-SID** | ⑧ ✅ N@10 0.0392 · 0.0403 | ⑦ ✅ N@10 0.0277 · 0.0245 |
+| **Beauty: 그래프 주소 > 텍스트 주소** | LOO 5시드 NDCG@10 +0.0044, 5/5 부호 일치, 노이즈 바닥 1.6배. COLD@50 +48% | ✅ 확정 |
+| **세 트랙(LOO·W4·W5) 3시드 재현** | Temporal W4 +0.0024, W5 +0.0022, 각 3/3 부호 일치·바닥 초과 | ✅ 확정 |
+| 튜닝식 β₀1.0 > 고전 블렌딩 α0.7 | 5시드 +0.0006, 사전 고정 바닥 0.0016 아래 | ❌ 구분 불가로 종결 |
+| 다양성(APLT@50) 개선 | 5시드 평균차가 바닥 아래 | ⬜ 측정 불가 유지 |
+| **구인구직 v3: 주지표 NDCG@10** | 6시드 짝지은 t 1.34 (기준 2.015). 시드 99 에서 부호 반전. recall@50·ndcg@50 은 유의 | ❌ 미확인 유지 |
+| **구인구직 v4 (캐글 분포 재보정) 재현** | 6시드 짝지은 t: recall@10·ndcg@10·recall@50·ndcg@50 유의, NDCG@10 t 11.4. G1 무작위 그래프 대조 7/7 통과 | ✅ 재현 (사전등록 바닥 방식은 n=6 에서 recall@50 만 통과 — 둘 다 보고) |
+| 이득이 학습 예산과 무관 (15k·45k) | P4 8셀 | ⏳ 2026-09-19 저녁 |
+| 접두사 제약 덤프에서 zero-shot 균열 (Beauty) | P5 덤프 6개 | ⏳ 2026-09-19 저녁 |
+| zero-shot 벽 | 원인은 SID 할당 커버리지. 2계층 접두사 확장으로 0 → 0.061 (전체 −15% 대가) | 원인 특정, 미해결 |
 
-*LOO 트랙 기준. Temporal(W4·W5)은 두 모델 모두 측정 완료 — 결과 문서 참고.*
-
-> **왜 좌우를 다 채워야 하나**: ⑦(결합 주소 + 확산)이 좋게 나왔을 때
-> *"주소를 합쳐서 좋아진 건가, 확산 덕분인가"* 를 답하려면 **같은 주소를 TIGER 에도
-> 시켜봐야(⑧)** 합니다. 한쪽만 돌리면 분해가 안 됩니다.
-
-> ⚠️ **전부 시드 1회입니다.** 핵심 비교 두 가지 — *우리 튜닝식 vs 고전 블렌딩* 과
-> *CRAB 의 롱테일 효과* — 는 차이가 **노이즈 바닥 아래**라 현재 주장할 수 없습니다.
-> 결론을 내려면 시드 2회가 필요합니다.
-
-**베이스라인 정의**: GRID 원본 + gradient clipping (스텝 수만 조정). 그 위에 그래프 증강과
-CRAB 을 얹습니다.
-
-### 주소 자산 — 지금 쓸 수 있는 SID 6종
-
-②⑤⑦⑧ 은 **주소가 이미 다 만들어져 있고 학습만 남았습니다.**
-
-| 행 | SID 이름 | 정체 | `WIDTH` |
-|---|---|---|---|
-| 텍스트 | `baseline/L4` (= `sid/L4`) | GRID 원본 + clipping | 256 |
-| G-SID | `sid_T1_noTau_k0_b05` | **우리 튜닝식** (τ 없음 · κ 0 · β₀ 0.5) | 256 |
-| G-SID | `gsid_a05_centered_nahye` | **고전 가중치 블렌딩** (α=0.5, 중심화) | 256 |
-| CRAB | `crab_baseline` | 텍스트 + CRAB | **306** |
-| CRAB+G-SID | `crab_T1_noTau_k0_b05` | 우리 튜닝식 + CRAB | **306** |
-| CRAB+G-SID | `crab_gsid_a05_centered` | 고전 블렌딩 + CRAB | **306** |
-
-> ⚠️ **G-SID 는 2종이 나란히 갑니다.** `sid_T1_...` 이 우리 방식이고
-> `gsid_a05_centered_nahye` 가 비교용 고전 방식입니다. 이름만 보면 거꾸로 읽기 쉽습니다.
->
-> ⚠️ **CRAB 주소는 `WIDTH=306` 을 넘겨야 합니다.** 토큰 분할로 코드 번호가 305 까지
-> 늘어나서, 기본값 256 으로 돌리면 인덱스 범위를 벗어나 즉시 죽습니다. → 아래 함정 4번
+**실패한 대조 2건**(CRAB 코드북 재균형, 확산 다이얼)과 그 근거는 `docs/SHARE_GSID_결과요약.md` §8.
+**인용하면 안 되는 낡은 수치**는 `docs/00_발표_가이드.md` 4절. 규칙: 1시드 수치는 인용하지 않습니다.
 
 ---
 
-## 검증 3트랙
+## 2. 세 갈래 작업과 정본 문서
 
-| 트랙 | 무엇을 재나 | 분할 | 진입점 |
+| 갈래 | 무엇 | 정본 | 상태 |
 |---|---|---|---|
-| **LOO** | 정확도 (Recall@5/@10, NDCG@10) | `Beauty_split_A.pkl` | `code/tiger_to_eval.py` |
-| **Temporal** | 시간이 흐를 때 콜드 아이템을 잡나 | `Beauty_split_B.pkl` W3/W4/W5 | `code/tiger_to_eval.py --window W5` |
-| **다양성** | 롱테일 노출·커버리지·도달가능성 | LOO/Temporal 덤프 재활용 | 같은 도구가 함께 출력 |
+| **실험** | G-SID 신뢰도 (시드 확장 P1·P3, Temporal P2, 예산 P4, 접두사 P5) | `docs/SHARE_GSID_결과요약.md` · `docs/RESULTS_실험표.md` · `results/reports/` | P1~P3 완료, P2 완료, P4·P5 9/19 저녁 |
+| **데이터셋** | 구인구직 생성 데이터셋 v3 → v4 (캐글 분포 재보정, 게이트 G0~G4) | `data_gen/README.md` · `docs/DATASET_v4_파이프라인.md` · `docs/JOBS_결과정리.md` | v4 n=6 완료, G2·G4 미실시 |
+| **서비스** | 학회 행사 네트워킹 웹앱 (이음 커넥트, 10월 말) | 노션 3번 페이지 | 설계 단계 |
 
-**컷오프는 전 지표 @10** 으로 통일했습니다(콜드 축만 @50). 다양성 대표축의 정식 명칭은
-**APLT@10** (Average Percentage of Long Tail items)입니다.
-
-> **다양성 트랙은 따로 돌리는 게 아닙니다.** `tiger_to_eval.py` 가 정확도와 다양성을
-> 한 번에 뱉으므로, LOO·Temporal 덤프에서 자동으로 같이 나옵니다.
-
-### 차이가 진짜인지 판정하는 자 — 노이즈 바닥
-
-같은 레시피에 **시드만 바꾼** 두 실행의 간격입니다. **이보다 작은 차이는 주장할 수 없습니다.**
-
-```
-NDCG@10  0.0016        APLT@10  0.0176
-```
-
-> ⚠️ "유의하다(p<0.05)"와 "노이즈 바닥보다 크다"는 **다른 질문**입니다. 시드만 바꾼
-> 실행도 "유의"하게 나옵니다. 반드시 이 자를 같이 대십시오. → `docs/TRACK_C_보고서.md` 6절
+세 갈래의 계획과 일정은 노션 **2차 발표 준비 계획** 페이지(팀 내부)에 있습니다. 2차 발표는 2026-09-24~30.
 
 ---
 
-## 지금 상태
-
-| 단계 | 상태 |
-|---|---|
-| 전처리 (Split A) | ✅ |
-| 임베딩 · SID (텍스트, 3단계/4단계) | ✅ |
-| TIGER 베이스라인 (①) | ✅ |
-| 다양성 평가 하네스 + 파레토 곡선 인프라 | ✅ |
-| G-SID 주소 | ✅ **확정 2종** — 우리 튜닝식 `T1` · 고전 블렌딩 `a05_centered` |
-| CRAB 주소 | ✅ **3종 생성 완료** — 텍스트 / 튜닝식+CRAB / 고전+CRAB |
-| MaskGR 파이프라인 | ✅ **서버 배포 + 환경 구축 + GPU 스모크 통과** |
-| Temporal 분할 (Split B) | ✅ **재전처리 완료** — W3/W4/W5 전부 학습 가능 |
-| **실험표 8칸 (LOO)** | ✅ **전부 측정 완료** — 학습 21회 · 덤프 21회 · 지표 25개 · 실패 0건 |
-| **Temporal (TIGER)** | ✅ 주소 3종 × W3·W4·W5 |
-| **Temporal (MaskGR)** | ✅ 주소 3종 × W4·W5 (W3 은 채점 유저 56.7% 결손으로 사전 배제) |
-| **시드 2회 재현** | ⬜ **미실시** — 핵심 비교 2건이 노이즈 바닥 아래라 결론 보류 중 |
-
-**Temporal W5 학습 실측** (2026-08-24, `partition1` RTX 6000 Ada · 30k 예산에서 조기종료)
-
-| 조건 | 종료 step | 최저 val/loss | 소요 |
-|---|---|---|---|
-| `tg_text_W5` (텍스트) | 15,999 | 12.3521 @ 6,999 | 약 1시간 50분 |
-| `tg_T1_W5` (우리 튜닝식) | 15,999 | 12.0995 @ 6,999 | 약 1시간 45분 |
-
-> 두 조건 모두 **step 6,999 에서 검증 손실 최저**를 찍고 이후 개선이 없어 patience 8 로
-> 조기 종료했습니다. 30k 를 다 돌 필요가 없다는 뜻이라, 남은 윈도우 예산을 그만큼 줄여
-> 잡아도 됩니다.
-
-> ⚠️ **Temporal 은 지금 시드 1회입니다.** 노이즈 바닥(아래)보다 작은 차이는 주장할 수
-> 없는데, LOO 실측에서 `COLD_recall@50` 의 시드 간 차이가 **0.0044** 로 두 G-SID 사이
-> 격차(0.0026)보다 큽니다. 콜드 축 결론을 내려면 시드 2회가 필요합니다.
-
-**TIGER 베이스라인 (①, 4단계 SID · 전수 22,363명)**
-
-| 모델 | Recall@10 | NDCG@10 | APLT@10 |
-|---|---|---|---|
-| EASE_R (고전 최강) | 0.0509 | 0.0265 | 0.0567 |
-| **TIGER `clip_L4`** | **0.0692** | **0.0384** | **0.0497** |
-| TIGER 논문 (Beauty) | 약 0.0648 | 약 0.0384 | — |
-
-> **정확도는 이기는데 롱테일 노출은 오히려 낮습니다** (0.0497 vs 0.0567).
-> 우리가 풀겠다고 한 문제가 실제로 존재한다는 첫 수치입니다. → `docs/TRACK_C_보고서.md`
-
----
-
-## 어디서부터 읽나 — 역할별
+## 3. 어디서부터 읽나
 
 | 나는… | 읽을 것 |
 |---|---|
-| **처음 온 사람** | 이 README → [`docs/TEAM_RESULTS.md`](docs/TEAM_RESULTS.md) |
-| **결과 수치가 궁금** | [`docs/RESULTS_실험표.md`](docs/RESULTS_실험표.md) — 8칸 전부 · 무엇을 주장할 수 있는지 · 재현 경로 |
-| **텍스트 SID 3트랙을 채운다** | [`docs/RUNBOOK_텍스트SID_3트랙.md`](docs/RUNBOOK_텍스트SID_3트랙.md) — 남은 GPU 작업 7회 |
-| **다른 SID 로 실험한다** | [`docs/HANDOFF_트랙C_다양성평가.md`](docs/HANDOFF_트랙C_다양성평가.md) — 내 실행에 지표 붙이는 법 |
-| **MaskGR 을 돌린다** | [`docs/HANDOFF_MaskGR.md`](docs/HANDOFF_MaskGR.md) |
-| **그래프 SID 담당** | [`docs/HANDOFF_graph_sid.md`](docs/HANDOFF_graph_sid.md) |
-| **CRAB 주소 담당** | [`crab/README.md`](crab/README.md) — 재구현 근거·설정·미해결 과제 |
-| **전처리 담당** | [`docs/REQUEST_전처리_splitB.md`](docs/REQUEST_전처리_splitB.md) |
-| **다양성·롱테일 결과가 궁금** | [`docs/TRACK_C_보고서.md`](docs/TRACK_C_보고서.md) · [비교표](docs/TRACK_C_비교표.md) |
-| **재전처리로 뭐가 바뀌었나** | [`docs/SPLIT_재전처리_영향.md`](docs/SPLIT_재전처리_영향.md) — 실측 대조 |
-| **TIGER 재현 경위** | [`docs/TIGER_BASELINE_REPORT.md`](docs/TIGER_BASELINE_REPORT.md) |
-| **서버에 들어간다** | [`docs/SERVER_공동사용.md`](docs/SERVER_공동사용.md) · [`docs/GPU_서버_사용가이드.md`](docs/GPU_서버_사용가이드.md) 🔒 |
-| **코드를 고친다** | [`code/README.md`](code/README.md) — 의존 관계와 실행 순서 |
+| 발표 자료를 만든다 | [`docs/00_발표_가이드.md`](docs/00_발표_가이드.md) → `SHARE_GSID_결과요약.md` · `JOBS_결과정리.md` |
+| Beauty 수치를 확인한다 | [`docs/RESULTS_실험표.md`](docs/RESULTS_실험표.md) (실험표 ①~⑤) · [`results/README.md`](results/README.md) (JSON 색인) |
+| 구인구직 데이터셋을 이해한다 | [`data_gen/README.md`](data_gen/README.md) → [`docs/PREREG_생성데이터셋.md`](docs/PREREG_생성데이터셋.md) → [`docs/DATASET_v4_파이프라인.md`](docs/DATASET_v4_파이프라인.md) |
+| 서버에서 실험을 제출한다 | [`docs/GPU_서버_사용가이드.md`](docs/GPU_서버_사용가이드.md) 🔒 · [`docs/SERVER_공동사용.md`](docs/SERVER_공동사용.md) · 제출 스크립트는 `code/run_*.sh` 머리 주석 |
+| 코드를 고친다 | [`code/README.md`](code/README.md) — 의존 관계 · 실행 순서 · **반복해서 당한 함정 8가지** |
+| 그래프 SID 를 만든다 | [`docs/HANDOFF_graph_sid.md`](docs/HANDOFF_graph_sid.md) · [`csv_export/sid/gstar_noTau_k0_b10/README.md`](csv_export/sid/gstar_noTau_k0_b10/README.md) (승자 수식) |
+| MaskGR · CRAB 을 돌린다 | [`docs/HANDOFF_MaskGR.md`](docs/HANDOFF_MaskGR.md) · [`crab/README.md`](crab/README.md) |
+| 문서가 너무 많다 | [`docs/README.md`](docs/README.md) — 전 문서 분류(정본 / 배경 / 운영 / 기록) |
 
 ---
 
-## 저장소 구조
+## 4. 파이프라인 한 장
 
 ```
-Data/              Amazon 2014 Beauty 원본 (meta, reviews 5-core)
-preprocessing/     전처리 코드 + 설계 문서
-Beauty_split_A.pkl LOO 분할 ★ 코드 기본값이라 옮기지 말 것
-Beauty_split_B.pkl Temporal 분할 — W3/W4/W5 (누적 train)
-Beauty_related_separate.pkl  관계종류 보존 그래프 (G-SID 가중치 실험용)
-                   셋 다 preprocessing/repreprocess.py 가 만드는 것과 같은 파일
-
-embeddings/        flan-t5-xl 아이템 임베딩 (12,101 × 2048)
-sid/               Semantic ID
-                     L3/ L4/                텍스트 (베이스라인)
-                     gsid_*/                그래프 증강
-                     crab_*/                CRAB 적용분 ★ WIDTH=306
-Tokenization/      그래프 SID 생성·비교 스크립트
-crab/              CRAB 코드북 재균형 (crab_sid.py + README) — 후처리라 GPU 불필요
-
-GRID/              snap-research/GRID 스냅샷 (팀 패치 2건 반영) — 임베딩·SID·TIGER
-MaskGR/            snap-research/MaskGR 스냅샷 — 마스크 확산
-
-code/              평가 하네스·변환·분석 (→ code/README.md)
-code/server/       서버 실행 스크립트 (sbatch)
-
-results/           지표 JSON (→ results/README.md)
-tiger_runs/        실행별 학습 로그 (metrics.csv)
-csv_export/        엑셀에서 여는 CSV — 발표자료용 (→ csv_export/README.md)
-docs/              리포트와 인수인계 문서
-_archive/          지금은 안 쓰는 파일 (지운 게 아님 → _archive/README.md)
+Amazon Beauty · 구인구직(생성)
+        │  전처리                 preprocessing/ · data_gen/
+        ▼  Split A (LOO) · Split B (Temporal W3/W4/W5)
+        │  텍스트 → 임베딩        GRID (flan-t5-xl, 2048차원)
+        ▼
+   ┌────┴────┐  주소 만들기
+ 텍스트 SID   G-SID (그래프 직교 주입, β₀=1.0)   ← 승자. 고전 블렌딩·CRAB 은 대조
+   └────┬────┘  GRID RQ-KMeans, 코드북 256, 4단계 + 충돌 구분자
+        ▼  학습                  TIGER (code/server/tiger_beauty.sh) · MaskGR (대조)
+        ▼  덤프 → 채점           tiger_eval_dump.sh → code/tiger_to_eval.py → results/*.json
+        ▼  판정                  code/verdict_*.py  (시드 평균 · 노이즈 바닥 · 짝지은 t · G1)
 ```
 
-### 핵심 산출물 불러오기
-
-```python
-import torch
-emb = torch.load("embeddings/beauty_A/merged_predictions_tensor.pt")  # (12101, 2048) 행=item_id
-sid = torch.load("sid/L4/sid_tensor.pt").T                            # (12101, 5)    행=item_id
-#   sid[i, :4] = 코드 4자리 / sid[i, 4] = 충돌 구분자(0부터)
-#   코드 범위는 SID 마다 다릅니다 — 텍스트·G-SID 0~255, CRAB 주소 0~305
-```
-
-| SID 설정 | 코드만으로 유일 | 구분자 필요 | 아이템당 토큰 |
-|---|---|---|---|
-| 3단계 × 256 | 87.97% | 1,456 (12.03%) | 4 |
-| **4단계 × 256** (채택) | **93.69%** | **763 (6.31%)** | 5 |
+**노이즈 바닥**: 같은 레시피에서 시드만 바꾼 실행들의 최대 간격. 이보다 작은 차이는 주장하지 않습니다.
 
 ---
 
-## 실행 — 빠른 길
+## 5. 저장소 구조
 
-환경과 의존성은 [`requirements.txt`](requirements.txt) 참고. 자주 쓰는 명령은 `Makefile` 에 있습니다.
+```
+docs/              보고서·인수인계·계획 (→ docs/README.md 에 분류표)
+code/              평가 하네스 · 제출/채점/판정 스크립트 (→ code/README.md)
+code/server/       서버 sbatch 스크립트
+results/           지표 JSON · 자동 보고서 (→ results/README.md)
+data_gen/          구인구직 생성 데이터셋 v3·v4 (→ data_gen/README.md)
+preprocessing/     Beauty 전처리 (+ 설계·수정 문서)
+csv_export/        엑셀용 CSV · SID 자산 설명 (→ csv_export/README.md)
+crab/              CRAB 코드북 재균형 (대조군)
+patches/           GRID 패치 기록
+GRID/  MaskGR/     업스트림 스냅샷 (snap-research, .git 제거) — GRID 에 팀 패치 2건
+_archive/          안 쓰지만 지우지 않은 것 (→ _archive/README.md)
+
+Beauty_split_A.pkl · Beauty_split_B.pkl   분할 파일 ★ 코드 기본값이라 옮기지 말 것
+```
+
+---
+
+## 6. 실행 — 빠른 길
 
 ```bash
-make help              # 무엇을 할 수 있는지
-make table             # 지금 결과로 비교표 다시 만들기 (GPU 불필요)
-make baselines         # 고전 베이스라인 재계산
+make help                                   # 로컬에서 할 수 있는 것 (표 재생성, 베이스라인, 채점)
+python code/tiger_to_eval.py --pred <덤프.pkl> --sid <sid.pt> --label <이름>     # 덤프 → 지표
+python code/tiger_to_eval.py ... --split Beauty_split_B.pkl --window W5         # Temporal
+
+# 서버 (자세한 옵션은 각 스크립트 머리 주석)
+bash code/run_gsid_week.sh --dry            # P1·P3 시드 확장
+bash code/run_p2_temporal.sh --dry          # P2 Temporal
+bash code/run_p4_p5.sh --dry                # P4 예산 · P5 접두사 덤프
+bash code/run_jobs_v4.sh train --dry        # 구인구직 v4
 ```
 
-전체 흐름과 서버 명령은 각 핸드오프 문서에 있습니다.
-
----
-
-## ⚠️ 반복해서 당한 함정 (읽고 시작하세요)
-
-1. **`src.inference`(`predict_step`) 산출물로 평가하지 마십시오.** 정답을 가리지 않아
-   Recall@10 이 0.0660 → 0.0961(**+46%**)로 부풀려집니다. 올바른 경로는
-   `code/server/tiger_eval_dump.sh` 입니다. 관련 스크립트는 `_archive/` 로 옮겼습니다.
-2. **`src.train train=False` 로 평가하지 마십시오.** `ckpt_path` 를 설정에서 읽지 않아
-   **랜덤 가중치로 평가**하고 경고 한 줄만 남깁니다. `src/eval_dump.py` 를 쓰십시오.
-3. **TFRecord 는 split 당 1파일**이라 `num_workers=0` + `timeout=0` +
-   `persistent_workers=false` 를 **세트로** 줘야 합니다. 안 그러면 워커가 굶어 죽습니다.
-4. **`num_hierarchies` = SID 텐서의 행 수**(4단계 → 5), `vocab_size` = NH × `WIDTH`.
-   `WIDTH` 는 **SID 마다 다릅니다** — 텍스트·G-SID 는 256(VOCAB 1280), **CRAB 주소는
-   306**(VOCAB 1530). CRAB 은 과인기 토큰을 쪼개면서 코드 번호를 305 까지 늘리므로,
-   256 으로 돌리면 임베딩 테이블 범위를 벗어나 즉시 죽습니다.
-5. **검증 표본을 셔플하지 않으면** 이력이 긴 유저만 뽑혀 검증 지표가 낙관적으로 나옵니다.
-   전수 검증(`LIMIT_VAL=1.0`)이 26초면 끝나니 아낄 이유가 없습니다.
-6. **MaskGR 에서는 `+trainer.…` 가 아니라 `++trainer.…` 를 쓰십시오.**
-   `configs/experiment/discrete_diffusion_train.yaml` 이 `gradient_clip_val` 과
-   `limit_val_batches` 를 **이미 정의**하고 있어서, GRID 에서 하던 대로 `+`(추가)를 주면
-   *"Could not append to config"* 로 죽습니다. GRID 설정에는 이 키들이 없어 `+` 가 맞았습니다.
-7. **`limit_val_batches` 에 분수를 주지 마십시오.** 데이터셋이 `IterableDataset` 라
-   lightning 이 `1.0` 이거나 정수만 받습니다. `0.05` 같은 값은
-   `MisconfigurationException` 입니다.
-8. **MaskGR 은 실패해도 3번 재시도합니다**(`src/utils/restart_job.py`). 설정 오류처럼
-   재시도해도 안 고쳐지는 실패에서 GPU 슬롯을 그만큼 더 잡아먹습니다. 새 설정은
-   **CPU 스모크로 먼저** 걸러내는 편이 쌉니다 — `trainer=cpu` + `++trainer.precision=32`
-   로 학습 루프 진입까지는 GPU 없이 검증됩니다. (`beam_search_generation` 이
-   `device='cuda'` 하드코딩이라 검증 단계부터는 GPU 가 필요합니다.)
-
----
-
-## 업스트림 스냅샷
-
-`GRID/` 와 `MaskGR/` 는 업스트림을 복사해 넣은 것입니다(`.git` 제거).
-
-| 폴더 | 업스트림 | 기준 커밋 |
-|---|---|---|
-| `GRID/` | https://github.com/snap-research/GRID | `2fe3475` (main) |
-| `MaskGR/` | https://github.com/snap-research/MaskGR | `b2d44f2` (main) |
-
-> `GRID/` 에는 팀 패치 2건이 반영돼 있습니다:
-> 1. `src/utils/inference_utils.py` — 단일 GPU 에서 `torch.distributed.barrier()` 로
->    병합이 항상 실패하던 버그
-> 2. `src/utils/tensor_utils.py` — SID 충돌 구분자를 0부터 시작하도록 변경
->
-> **`MaskGR/` 은 아직 무패치입니다.** 신규 파일만 얹어 씁니다 — `docs/HANDOFF_MaskGR.md` 참고.
+의존성은 [`requirements.txt`](requirements.txt). `.pt`·덤프 pkl 은 torch 가 있어야 열립니다.
 
 ---
 
 ## 참고 논문
 
-- **TIGER** — 재현 베이스라인 (SID 패러다임)
-- **GRID Handbook** ([2507.22224](https://arxiv.org/abs/2507.22224)) — 코드베이스·설계 근거
-- **MaskGR** ([2511.23021](https://arxiv.org/abs/2511.23021)) — 마스크 확산 생성형 추천
-- **Can GR Reach Cold Items?** — 콜드스타트 진단·절대시간 분할 프로토콜
-- **CRAB** ([2604.05113](https://arxiv.org/abs/2604.05113)) — 코드북 재균형
+- **TIGER** — Rajput et al., NeurIPS 2023 ([2305.05065](https://arxiv.org/abs/2305.05065)) — 재현 베이스라인
+- **GRID Handbook** — Ju et al., Snap Research 2025 ([2507.22224](https://arxiv.org/abs/2507.22224)) — 코드베이스
+- **MaskGR** ([2511.23021](https://arxiv.org/abs/2511.23021)) — 마스크 확산 (대조)
+- **CRAB** — Fan et al., 2026 ([2604.05113](https://arxiv.org/abs/2604.05113)) — 코드북 재균형 (실패한 대조)
+- **Semantic IDs for Joint Generative Search and Recommendation** — Penha et al., RecSys 2025 ([2508.10478](https://arxiv.org/abs/2508.10478)) — 5시드 평균·짝지은 t 프로토콜의 근거

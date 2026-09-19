@@ -8,7 +8,7 @@ preprocess.py 대비 무엇이/왜 바뀌었는지는 preprocessing/전처리_�
     Data/reviews_Beauty_5.json.gz
     Data/meta_Beauty.json.gz
 
-Split B 는 docs/REQUEST_전처리_splitB.md 의 제안(리뷰 건수 분위수로 위치를 잡되,
+Split B 는 docs/_archive/REQUEST_전처리_splitB.md 의 제안(리뷰 건수 분위수로 위치를 잡되,
 실제 경계는 날짜 단위로 스냅)을 그대로 구현한다. 자세한 이유는 그 문서 참고.
 
 실행:
@@ -169,7 +169,7 @@ def split_chronological_windows(reviews, n_windows=5, by='count'):
     """
     by='time'  : 전체 기간을 달력 기준 균등 n등분 (Can GR Reach Cold Items? 논문 원안).
                  이 데이터는 리뷰가 2013년에 몰려있어 초기 윈도우가 사실상 비어 실험 불가.
-    by='count' : 리뷰 건수 기준 균등 n등분 (기본값, docs/REQUEST_전처리_splitB.md 제안).
+    by='count' : 리뷰 건수 기준 균등 n등분 (기본값, docs/_archive/REQUEST_전처리_splitB.md 제안).
 
     ★ 건수 분위수로 '위치'를 찾되, 실제로 자르는 경계는 그 위치의 '타임스탬프 값'으로
       스냅한다. 이 데이터는 타임스탬프가 일 단위(고유 2,927개, 하루 평균 15건, 최대
@@ -228,7 +228,7 @@ def _rows_to_user_targets(rows, iid):
 def build_split_B_windows(chunks, asins, iid, uid):
     """5개의 건수-균등 청크(C1..C5, chunks[0]=W1 ... chunks[4]=W5)로부터,
     누적 train / 직전 청크 val / 현재 청크 test 구조의 W3/W4/W5 스냅샷을 만든다.
-    (docs/REQUEST_전처리_splitB.md §3 구조 그대로: train 은 뒤로 갈수록 누적된다.)
+    (docs/_archive/REQUEST_전처리_splitB.md §3 구조 그대로: train 은 뒤로 갈수록 누적된다.)
     """
     windows = {}
     cold_tiers = {}

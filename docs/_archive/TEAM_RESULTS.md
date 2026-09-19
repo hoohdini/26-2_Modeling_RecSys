@@ -140,7 +140,7 @@ Split A와 B가 **11,909개 아이템에서 텍스트가 다릅니다** (단어 
 ## 5-2. TIGER 베이스라인 — 완료 (2026-08-20)
 
 실험표 4×2 중 **①번 칸(텍스트 SID × TIGER)** 을 끝냈습니다. 자세한 내용은
-[`TIGER_BASELINE_REPORT.md`](TIGER_BASELINE_REPORT.md).
+[`TIGER_BASELINE_REPORT.md`](../TIGER_BASELINE_REPORT.md).
 
 | 모델 | Recall@5 | Recall@10 | NDCG@10 |
 |---|---|---|---|
@@ -198,12 +198,12 @@ SID 덕분이라고 말할 수 있습니다.
 
 > ⚠️ **`dsl05` 는 팀 전체가 같이 쓰는 단일 계정입니다.** 팀원이 접속하면 제가 만든 데이터에서
 > 그대로 이어서 작업하게 되지만, **서로의 결과를 지울 수도 있습니다.**
-> 서버에 들어오기 전에 반드시 [`docs/SERVER_공동사용.md`](SERVER_공동사용.md) 를 읽어주세요.
+> 서버에 들어오기 전에 반드시 [`docs/SERVER_공동사용.md`](../SERVER_공동사용.md) 를 읽어주세요.
 
 - conda 환경(python 3.10 + torch 2.6.0+cu124), flan-t5-xl 캐시 11GB, GRID 코드, TFRecord 전부 업로드
 - `sbatch ~/recsys/embed_beauty.sh` (임베딩 4분) / `sbatch ~/recsys/sid_beauty.sh` (SID 7분)
 - 사용 가능 GPU: `partition1` (hpc-stat1, **RTX 6000 Ada 48GB 5장**), `jobs` (hpc, 2장)
-- 접속 방법·함정은 [`docs/GPU_서버_사용가이드.md`](GPU_서버_사용가이드.md)
+- 접속 방법·함정은 [`docs/GPU_서버_사용가이드.md`](../GPU_서버_사용가이드.md)
   (이 저장소가 private 이라 포함돼 있습니다 — 🔒 외부 유출 금지)
 
 GRID 코드 버그 2개도 잡아서 이 레포의 `GRID/` 스냅샷에 반영해 뒀습니다

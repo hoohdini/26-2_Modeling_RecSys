@@ -240,5 +240,5 @@ Beauty_split_A.pkl        평가 기준 split
 
 - 지표 정의가 궁금하면 → `code/evaluate.py` (전부 주석 있음)
 - 왜 이렇게 쟀는지 → `docs/TRACK_C_보고서.md`
-- 결과 표 → `docs/TRACK_C_비교표.md`, 그림은 `docs/TRACK_C_아티팩트.html`
+- 결과 표 → `docs/TRACK_C_비교표.md`, 그림은 `docs/_archive/TRACK_C_아티팩트.html`
 - 프로토콜 확정안(분할·경계·대표 지표) → 보고서 7절

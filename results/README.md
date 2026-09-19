@@ -81,3 +81,105 @@
 | `p2_temporal/` | Beauty Temporal W4·W5 × text/b10 × 시드 42·7·13 = 12 (P2, 30k 레시피 통일. 4셀은 기존 tg_* 덤프 재채점) | `verdict_p2_temporal.py` | `reports/P2_보고.txt` |
 
 요지: P1 그래프>텍스트 확정(규칙 A 튜닝식>고전은 바닥 아래로 종결). P3 v3 n=6 은 시드 99 부호반전으로 주지표 미확인. v4 n=6 은 짝지은 t 로 정확도 4지표 유의·G1 통과, 사전등록 바닥 방식은 n=6 에서 recall@50 만 통과. P2 규칙 C 통과(세 트랙 3시드 재현). P4·P5 는 9/19 저녁 예정.
+
+---
+
+## `experiment_8cells/` — 실험표 8칸 지표 원본 (2026-08-25)
+
+`docs/RESULTS_실험표.md` 의 모든 표가 이 27개 JSON 에서 나왔습니다.
+학습 21회 · 덤프 21회 · 실패 0건. **전부 시드 42 단일**입니다.
+
+### 파일 이름 규칙
+
+```
+<모델>_<주소>_<트랙>.json
+
+  모델    tg = TIGER          mg = MaskGR
+  주소    text = 텍스트        T1 = G-SID 튜닝식      a05c = G-SID 고전
+          crab_text = CRAB    crab_T1 / crab_a05c = CRAB + G-SID
+  트랙    A = LOO (Split A)   W3/W4/W5 = Temporal (Split B)
+          MaskGR 의 Temporal 은 과거 명명을 따라 _B_W4 / _B_W5
+```
+
+### 실험표 대응
+
+| 칸 | 주소 | TIGER | MaskGR |
+|---|---|---|---|
+| ①④ | 텍스트 | `tg_text_A.json` | `mg_text_A.json` |
+| ③⑥ | G-SID 튜닝식 | `tg_T1_A.json` | `mg_T1_A.json` |
+| ③⑥ | G-SID 고전 | `tg_a05c_A.json` | `mg_a05c_A.json` |
+| ②⑤ | CRAB | `tg_crab_text_A.json` | `mg_crab_text_A.json` |
+| ⑧⑦ | CRAB + G 튜닝식 | `tg_crab_T1_A.json` | `mg_crab_T1_A.json` |
+| ⑧⑦ | CRAB + G 고전 | `tg_crab_a05c_A.json` | `mg_crab_a05c_A.json` |
+
+Temporal 은 `tg_{text,T1,a05c}_{W3,W4,W5}.json` (TIGER, 9개) 와
+`mg_{text,T1,a05c}_B_{W4,W5}.json` (MaskGR, 6개).
+
+> **MaskGR 에 W3 이 없는 것은 사전 배제입니다.** 테스트 유저 11,358명 중 6,441명(56.7%)이
+> 그 윈도우에 학습 이력이 없어 채점 유저가 4,917명뿐이고, TIGER 로 재 본 결과 조건 간
+> 최대 차이가 전부 노이즈 바닥 아래였습니다. TIGER × W3 수치는 그대로 보존돼 있습니다.
+
+### 각 파일 안에
+
+`{라벨: {지표..., "_source": {...}}}` 형식입니다. `compare_table.py` 가 그대로 읽습니다.
+
+지표는 @10/@20/@50 이 모두 들어 있고, 보고용 컷오프는 **@10**(콜드축만 @50)입니다.
+다양성 축은 별도 파일이 아니라 같은 JSON 안에 있습니다 — `aplt@10` · `coverage@10` ·
+`exposure_gini@10` · `tail_exposure@10`.
+
+`_source` 블록에 **추적·검증에 필요한 것이 다 있습니다**:
+
+```json
+"_source": {
+  "pred_file": "...",  "sid_file": "...",  "split_file": "...",  "window": "W5",
+  "n_invalid_sid": 0,  "invalid_sid_rate": 0.0,      ← SID 조회 실패율. 1.0 이면 좌표계 불일치
+  "label_match_rate": 1.0,                            ← 정답 SID 전건 대조 (LOO 만)
+  "n_slot_per_user": 200.0, "truncated_at": 200.0
+}
+```
+
+### 재현
+
+덤프 pkl 은 용량 때문에 레포에 없습니다(`.gitignore` 의 `*.pkl`). 서버
+`~/recsys/{tiger_out,maskgr_out}/<태그>/eval_dump*/test_predictions_rank0.pkl` 에 있고,
+체크포인트가 남아 있어 `tiger_eval_dump.sh` / `maskgr_eval_dump.sh` 로 다시 뜰 수 있습니다
+(TIGER 1~2분, MaskGR 22분~1시간).
+
+```bash
+# TIGER 덤프는 그대로
+python code/tiger_to_eval.py --pred <덤프.pkl> --sid <sid.pt> \
+       --split Beauty_split_A.pkl --label <라벨> --out results/<라벨>.json
+# Temporal 은 --window W5 추가 (Split B 로 읽는다)
+
+# ★ MaskGR 덤프는 반드시 좌표계를 먼저 되돌린다 — 안 하면 전 지표가 0 이다
+python code/maskgr_to_tiger.py <덤프.pkl> <변환본.pkl>                            # 일반 주소
+python code/maskgr_to_tiger.py <덤프.pkl> <변환본.pkl> --stride 307 --width 306   # CRAB 주소
+```
+
+자세한 내용과 판정(무엇을 주장할 수 있고 없는지)은 `docs/RESULTS_실험표.md` 참고.
+
+---
+
+## `gsid_param_sweep/` — β₀ 스윕 + 다중시드 검증 원본 (2026-08-28)
+
+`docs/RESULTS_실험표.md` 실험표 ⑤의 원본입니다. 전부 **재전처리(8/22) 이후의
+신규 Split A/B** 로 채점 (COLD 분모 6,197 — 구 실험표 ①~④의 6,597 과 다름).
+채점 하네스: 서버 `work/eval/tiger_to_eval.py`, 덤프는 전부 TOPK=200.
+
+### 파일 명명
+
+- `ns_<조건>_s<시드>.json` — LOO (Split A)
+- `nsB_<조건>_<윈도우>[_s7].json` — Temporal (Split B, W4/W5). 시드 표기 없으면 42.
+
+| 조건 코드 | 의미 | SID |
+|---|---|---|
+| `base` / `text` | baseline 텍스트 SID | `sid_out/baseline` |
+| `T1` | 튜닝식 β₀0.5 (τ없음·κ0) | `sid_out/sid_T1_noTau_k0_b05` |
+| `b07` | 튜닝식 β₀0.7 | `sid_out/sid_noTau_k0_b07` |
+| `b10` | **튜닝식 β₀1.0 — 승자** | `sid_out/sid_noTau_k0_b10` |
+| `a05c` | 고전 블렌딩 α0.5 (중심화) | `sid_out/gsid_a05_centered_nahye` |
+| `a07` | 고전 블렌딩 α0.7 (중심화) | `sid_out/sid_blend_centered_a07` |
+
+주의: 기존 조건(base/T1/a05c 시드42·7 등)도 **기존 덤프를 신규 스플릿으로 재채점**한
+것이라, `results/experiment_8cells/` 의 같은 조건 수치와 다릅니다 (특히 COLD·APLT).
+W5 는 tgfix 레시피(8k 스텝) 기준으로 통일했습니다.
