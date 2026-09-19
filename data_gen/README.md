@@ -126,3 +126,25 @@ ItemKNN        0.07502        2.90x     (Amazon Beauty: 3.52x)
    결과이며 조작하지 않았습니다.
 5. **담당자의 컨택 순서는 무작위입니다.** 점수 순이 아닙니다(실제 채용도 그렇습니다).
    따라서 순차 신호보다 집합 신호가 주된 학습 대상입니다.
+
+---
+
+## 6. v4 (2026-09-15 시작) — 캐글 분포로 재보정
+
+v3 의 프로필·텍스트·그래프는 그대로 두고 **상호작용만** 캐글 CareerBuilder 2012 실측 분포에 맞춰 다시 만든다.
+계획·GPU 일정·판정 규칙은 [`docs/DATASET_v4_파이프라인.md`](../docs/DATASET_v4_파이프라인.md),
+허용 구간은 [`docs/G3_허용구간.md`](../docs/G3_허용구간.md), 출처 조건은 [`docs/LICENSE_데이터출처.md`](../docs/LICENSE_데이터출처.md).
+
+```bash
+python data_gen/v4/kaggle_stats.py                 # 1. 캐글 → 목표 분포 (원본은 D:/DSL/_external 에, 집계만 저장소에)
+python data_gen/v4/map_kaggle_titles.py            # 2. 직무명 → 492 직업·KECO 1차 매핑 + 검수 시트 200건
+python data_gen/v4/calibrate_simulator.py --target data_gen/spec/kaggle_target_dist.json --jobs 4
+                                                   # 3. temp·gamma·k 격자 → G-L 통과 중 G3 최적 → spec/v4_params.json
+JOBS_OUT_DIR=data_gen/v4/out/v4 python data_gen/simulate_interactions.py <v4_params.json 의 command>
+JOBS_OUT_DIR=data_gen/v4/out/v4 python data_gen/build_splits.py
+JOBS_OUT_DIR=data_gen/v4/out/v4 python data_gen/gate_learnability.py       # 4. G-L (제출 전 필수)
+python data_gen/v4/gate_g3_stats.py --interactions data_gen/v4/out/v4/interactions.csv        --profiles data_gen/out/profiles.csv --target data_gen/spec/kaggle_target_dist.json --md docs/G3_통계정합성.md
+python data_gen/v4/dataset_manifest.py --version v4 --dir data_gen/v4/out/v4 --params-json data_gen/spec/v4_params.json
+```
+
+`JOBS_IN_DIR` / `JOBS_OUT_DIR` 환경변수가 없으면 v3 스크립트는 예전과 완전히 같이 동작한다.

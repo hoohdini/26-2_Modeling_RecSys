@@ -1,0 +1,159 @@
+{
+  "source": "Kaggle Job Recommendation Challenge (CareerBuilder 2012)",
+  "note": "집계 통계만 저장. 원본·파생 파일은 저장소에 올리지 않는다.",
+  "n_users": 389708,
+  "n_apps": 1603111,
+  "n_windows": 7,
+  "windows": {
+    "1": {
+      "n_apps": 303833,
+      "n_users_applied": 60274,
+      "n_jobs_applied": 77056,
+      "density_applied": 6.541818145915492e-05,
+      "span_days": 41,
+      "apps_per_day": 7410.5609756097565
+    },
+    "2": {
+      "n_apps": 181345,
+      "n_users_applied": 43535,
+      "n_jobs_applied": 49284,
+      "density_applied": 8.452031133377922e-05,
+      "span_days": 54,
+      "apps_per_day": 3358.240740740741
+    },
+    "3": {
+      "n_apps": 189950,
+      "n_users_applied": 43051,
+      "n_jobs_applied": 47610,
+      "density_applied": 9.267399234694805e-05,
+      "span_days": 68,
+      "apps_per_day": 2793.3823529411766
+    },
+    "4": {
+      "n_apps": 206121,
+      "n_users_applied": 42797,
+      "n_jobs_applied": 49650,
+      "density_applied": 9.700400407827101e-05,
+      "span_days": 81,
+      "apps_per_day": 2544.703703703704
+    },
+    "5": {
+      "n_apps": 204715,
+      "n_users_applied": 42077,
+      "n_jobs_applied": 48767,
+      "density_applied": 9.976514952899199e-05,
+      "span_days": 86,
+      "apps_per_day": 2380.406976744186
+    },
+    "6": {
+      "n_apps": 162323,
+      "n_users_applied": 36351,
+      "n_jobs_applied": 37429,
+      "density_applied": 0.00011930412884121518,
+      "span_days": 86,
+      "apps_per_day": 1887.4767441860465
+    },
+    "7": {
+      "n_apps": 169227,
+      "n_users_applied": 39948,
+      "n_jobs_applied": 39946,
+      "density_applied": 0.0001060477153318891,
+      "span_days": 86,
+      "apps_per_day": 1967.7558139534883
+    }
+  },
+  "apps_per_user": {
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 5.0,
+    "p90": 10.0,
+    "p95": 15.0,
+    "p99": 39.0,
+    "mean": 4.601825129125776,
+    "n": 308033,
+    "share_users_with_any_app": 0.8396243901109385,
+    "share_ge3": 0.4579801514772768,
+    "share_ge5": 0.26018316219366106
+  },
+  "apps_per_job_applied_only": {
+    "p10": 1.0,
+    "p25": 1.0,
+    "p50": 2.0,
+    "p75": 4.0,
+    "p90": 9.0,
+    "p95": 15.0,
+    "p99": 36.0,
+    "mean": 4.053027660389659,
+    "n": 349742,
+    "gini": 0.5843282127905095,
+    "top50_share": 0.8636535512171308,
+    "top20_share": 0.6519653421412417,
+    "share_le3": 0.726249635445557,
+    "share_le5": 0.8258859387777275
+  },
+  "user_active_span_days": {
+    "p10": 0.0,
+    "p25": 0.0,
+    "p50": 3.0,
+    "p75": 15.0,
+    "p90": 28.0,
+    "p95": 40.0,
+    "p99": 67.0,
+    "mean": 9.904914445280628,
+    "n": 201976
+  },
+  "gap_between_apps_days": {
+    "p10": 1.1921296296296297e-06,
+    "p25": 8.414351851851851e-06,
+    "p50": 0.001032216435185185,
+    "p75": 0.02654239872685185,
+    "p90": 6.37233759837963,
+    "p95": 12.999908148148148,
+    "p99": 27.65925753877328,
+    "mean": 1.8665657855736622,
+    "n": 1105116,
+    "share_same_day": 0.820104857770587
+  },
+  "total_years_experience": {
+    "p10": 4.0,
+    "p25": 6.0,
+    "p50": 11.0,
+    "p75": 16.0,
+    "p90": 24.0,
+    "p95": 29.0,
+    "p99": 37.0,
+    "mean": 12.426880634548855,
+    "n": 353511
+  },
+  "degree_type_share": {
+    "Bachelor's": 0.2680459018180827,
+    "None": 0.25733093466350476,
+    "High School": 0.23848774770354622,
+    "Associate's": 0.11716956960231145,
+    "Master's": 0.09078965301060321,
+    "Vocational": 0.01801182980347262,
+    "PhD": 0.010164363398479025
+  },
+  "work_history_count": {
+    "p10": 2.0,
+    "p25": 3.0,
+    "p50": 4.0,
+    "p75": 6.0,
+    "p90": 8.0,
+    "p95": 9.0,
+    "p99": 10.0,
+    "mean": 4.504061384141521,
+    "n": 366870
+  },
+  "managed_others_share": 0.25816774334232834,
+  "user_state_top10_share": 0.6035380379971106,
+  "n_jobs_total": 1092096,
+  "share_jobs_with_zero_apps": 0.6797515969292077,
+  "title_vocab": {
+    "n_history_rows": 1653254,
+    "n_job_title_rows": 1092089,
+    "n_distinct_titles": 1018193,
+    "top500_coverage": 0.27211463194216534
+  }
+}

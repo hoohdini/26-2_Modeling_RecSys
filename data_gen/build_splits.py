@@ -25,6 +25,8 @@ import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data_gen", "out")
+IN = os.environ.get("JOBS_IN_DIR", OUT)     # profiles·text·graph 위치
+OUT = os.environ.get("JOBS_OUT_DIR", OUT)   # interactions.csv 입력과 pkl 출력 위치
 N_ITEMS = 12000
 
 
@@ -70,20 +72,20 @@ def main():
     rows.sort(key=lambda r: (r[3], r[0], r[1]))
 
     text = {}
-    with io.open(os.path.join(OUT, "profile_text.tsv"), encoding="utf-8") as f:
+    with io.open(os.path.join(IN, "profile_text.tsv"), encoding="utf-8") as f:
         for line in f:
             if line.strip():
                 i, t = line.rstrip("\n").split("\t", 1)
                 text[int(i)] = t
 
     graph = defaultdict(set)
-    with io.open(os.path.join(OUT, "jobs_edges_final.csv"), encoding="utf-8") as f:
+    with io.open(os.path.join(IN, "jobs_edges_final.csv"), encoding="utf-8") as f:
         next(f)
         for line in f:
             a, b, _ = line.rstrip("\n").split(",")
             graph[int(a)].add(int(b))
 
-    prof = list(csv.DictReader(io.open(os.path.join(OUT, "profiles.csv"), encoding="utf-8")))
+    prof = list(csv.DictReader(io.open(os.path.join(IN, "profiles.csv"), encoding="utf-8")))
     # item_salesrank 자리에는 그 직업의 KECO 코드를 넣는다 (Beauty 의 salesRank 대응 슬롯)
     salesrank = {int(r["profile_id"]): {"keco": r["keco_cd"]} for r in prof}
 

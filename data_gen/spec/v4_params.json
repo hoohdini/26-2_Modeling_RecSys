@@ -1,0 +1,26 @@
+{
+  "chosen": {
+    "temp": 0.25,
+    "gamma": 0.1,
+    "k_mu": 1.55,
+    "k_sigma": 1.0
+  },
+  "chosen_name": "t0.25_g0.1_km1.55_ks1",
+  "g3_score": 1.555,
+  "gl": {
+    "MostPopular": 1.0,
+    "ContentKNN": 2.9081885856079404,
+    "ItemKNN": 2.729528535980149
+  },
+  "target": "Kaggle Job Recommendation Challenge (CareerBuilder 2012)",
+  "smoke": false,
+  "fixed": {
+    "obs_noise": 14.0,
+    "sigma_r": 10.0,
+    "top_m": 20,
+    "cand_pool": 12000,
+    "seed": 42
+  },
+  "rule": "G-L 통과 후보 중 G3 점수 최소, 동점이면 v3 값에 가까운 것",
+  "command": "python data_gen/simulate_interactions.py --temp 0.25 --gamma 0.1 --k-mu 1.55 --k-sigma 1 --cand-pool 12000 --seed 42"
+}

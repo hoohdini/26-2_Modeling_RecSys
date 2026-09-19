@@ -38,6 +38,10 @@ import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data_gen", "out")
+# v4 캘리브레이션용: 입력(profiles·skill)은 IN, 출력(interactions·regtime)은 OUT.
+# 환경변수가 없으면 v3 과 완전히 같은 경로·동작이다.
+IN = os.environ.get("JOBS_IN_DIR", OUT)
+OUT = os.environ.get("JOBS_OUT_DIR", OUT)
 
 N_RECRUITER = 20000
 N_INTERACT = 200000
@@ -49,6 +53,7 @@ GAMMA = 0.55          # 인기 쏠림
 DELTA = 0.9           # 최신성
 TEMP = 6.0            # 적합도 온도 (작을수록 적합도 지배)
 CAND_POOL = 3000      # 한 담당자가 훑는 후보 풀 (전수 스캔은 비현실적)
+K_MU, K_SIGMA = 1.55, 0.75   # 담당자당 컨택 수 로그정규 (v4 에서 캐글 분포로 보정 가능)
 
 
 def gini(x):
@@ -68,6 +73,8 @@ def main():
     ap.add_argument("--temp", type=float, default=TEMP)
     ap.add_argument("--obs-noise", type=float, default=OBS_NOISE)
     ap.add_argument("--cand-pool", type=int, default=CAND_POOL)
+    ap.add_argument("--k-mu", type=float, default=K_MU, help="담당자당 컨택 수 로그정규 mu")
+    ap.add_argument("--k-sigma", type=float, default=K_SIGMA, help="담당자당 컨택 수 로그정규 sigma")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", default=os.path.join(OUT, "interactions.csv"))
     args = ap.parse_args()
@@ -78,8 +85,9 @@ def main():
         pass
 
     rng = np.random.default_rng(args.seed)
-    rows = list(csv.DictReader(io.open(os.path.join(OUT, "profiles.csv"), encoding="utf-8")))
-    V = np.load(os.path.join(OUT, "profile_skill.npy")).astype(np.float32)
+    os.makedirs(OUT, exist_ok=True)
+    rows = list(csv.DictReader(io.open(os.path.join(IN, "profiles.csv"), encoding="utf-8")))
+    V = np.load(os.path.join(IN, "profile_skill.npy")).astype(np.float32)
     n_p, dim = V.shape
     job = np.array([r["job_cd"] for r in rows])
     jobs = sorted(set(job))
@@ -108,7 +116,7 @@ def main():
     span = np.minimum(span, T_DAYS - r_time)
 
     # 담당자당 컨택 수 — 로그정규, 평균이 목표 총량이 되도록
-    k_r = np.clip(rng.lognormal(1.55, 0.75, args.recruiters).round(), 1, 60).astype(int)
+    k_r = np.clip(rng.lognormal(args.k_mu, args.k_sigma, args.recruiters).round(), 1, 60).astype(int)
     k_r = np.maximum(1, (k_r * (args.interactions / k_r.sum())).round().astype(int))
 
     pop = np.zeros(n_p, dtype=np.float32)

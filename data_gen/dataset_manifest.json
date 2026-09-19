@@ -1,0 +1,178 @@
+{
+  "v3": {
+    "created": "2026-09-15 22:41",
+    "commit": "d4a84ed",
+    "dir": "data_gen\\out",
+    "params": {
+      "version": "v3",
+      "note": "v3 = v2 데이터(2026-08-31 재캘리브레이션) + 학습 프로토콜 고정(2026-09-01). 데이터 생성 파라미터는 v2 와 같다.",
+      "simulate_interactions": {
+        "temp": 0.15,
+        "gamma": 0.2,
+        "cand_pool": 12000,
+        "seed": 42,
+        "obs_noise": 14.0,
+        "sigma_r": 10.0,
+        "top_m": 20,
+        "k_mu": 1.55,
+        "k_sigma": 0.75,
+        "delta": 0.9,
+        "recruiters": 20000,
+        "interactions": 200000
+      },
+      "build_profiles": {
+        "n": 12000,
+        "seed": 42,
+        "sigma": 12.0,
+        "zipf_a": 0.6
+      },
+      "graph": {
+        "relations": [
+          "related_occupation",
+          "skill_vector",
+          "career_path"
+        ],
+        "demoted": [
+          "same_occupation"
+        ],
+        "edges": 220918
+      },
+      "training": {
+        "max_steps": 30000,
+        "patience": 1000,
+        "limit_val": 150,
+        "seeds": [
+          42,
+          7,
+          13
+        ]
+      },
+      "source": "docs/JOBS_데이터셋_구축기록.md, docs/JOBS_학습실패_원인분석.md §6, code/run_jobs_v3.sh"
+    },
+    "files": {
+      "profiles.csv": {
+        "sha256": "ba883b184c33c21a2ac72a155299a8c2f43704bae1ac4e8f22f9e4c4e0403242",
+        "bytes": 2295378,
+        "rows": 12001
+      },
+      "profile_skill.npy": {
+        "sha256": "e415e442af7f43827df107b9ddea0bc02ce9cd929206e30d7de794b13ae056db",
+        "bytes": 3696128,
+        "rows": null
+      },
+      "profile_text.tsv": {
+        "sha256": "d35136dcfc23929fc11973e60b406435437da7ce217abde5d55912048585ebc1",
+        "bytes": 2851026,
+        "rows": 12000
+      },
+      "profile_regtime.npy": {
+        "sha256": "e3c774b2d12e29fb24ad0f7b73943b63dd1adde12a8c948f01b19478b60412c9",
+        "bytes": 48128,
+        "rows": null
+      },
+      "skill_dims.txt": {
+        "sha256": "29c9190a6c0ac93991a492c3ac7a097470f8557bed686e1a1b3fd2415b050b5a",
+        "bytes": 1078,
+        "rows": 77
+      },
+      "jobs_edges_final.csv": {
+        "sha256": "2ec3c94f386a45bdd640792238d63fda4499c3ee25b23e556d0c2b5f9d211bee",
+        "bytes": 5633282,
+        "rows": 220919
+      },
+      "jobs_edges_long.csv": {
+        "sha256": "a4ac7c170ad3c4185f6e8d7c43e9309c46b5efcda600e1bf3e1d4151122ee629",
+        "bytes": 7157282,
+        "rows": 268915
+      },
+      "jobs_edges_rewired.csv": {
+        "sha256": "859663afc81f500dbe139844f438b2cf24a003ab40aa9336fbd6773d854b2350",
+        "bytes": 5847790,
+        "rows": 220667
+      },
+      "interactions.csv": {
+        "sha256": "3c8b02b377d85c0d86d1bb47f7cabbdc9a99956c7d6d9c6bdf7adb37cbc9d508",
+        "bytes": 6385374,
+        "rows": 199852
+      },
+      "jobs_interactions_long.csv": {
+        "sha256": "bc2875657b59e27a33553b81e0f8402bd1b31fff5fbd78f18cf6699b3ceafe28",
+        "bytes": 3902427,
+        "rows": 199818
+      },
+      "Jobs_split_A.pkl": {
+        "sha256": "f129064fba90d24513e5f2e7c68a0f0705354991f3507efd8701901a1907bc02",
+        "bytes": 5562256,
+        "rows": null
+      },
+      "Jobs_split_B.pkl": {
+        "sha256": "a3c1720e533dd4c5699a2af9cbf5b3c6fc6e3454fec084b45e00a716780a614a",
+        "bytes": 7224600,
+        "rows": null
+      },
+      "jobs_text_emb.pt": {
+        "sha256": "14eb050f7a21075e4eef13bc2e44f008096a72956f759c04ab5b555521cde5b0",
+        "bytes": 98305210,
+        "rows": null
+      }
+    }
+  },
+  "v4": {
+    "created": "2026-09-16 00:03",
+    "commit": "d4a84ed",
+    "dir": "data_gen\\v4\\out\\v4",
+    "params": {
+      "chosen": {
+        "temp": 0.25,
+        "gamma": 0.1,
+        "k_mu": 1.55,
+        "k_sigma": 1.0
+      },
+      "chosen_name": "t0.25_g0.1_km1.55_ks1",
+      "g3_score": 1.555,
+      "gl": {
+        "MostPopular": 1.0,
+        "ContentKNN": 2.9081885856079404,
+        "ItemKNN": 2.729528535980149
+      },
+      "target": "Kaggle Job Recommendation Challenge (CareerBuilder 2012)",
+      "smoke": false,
+      "fixed": {
+        "obs_noise": 14.0,
+        "sigma_r": 10.0,
+        "top_m": 20,
+        "cand_pool": 12000,
+        "seed": 42
+      },
+      "rule": "G-L 통과 후보 중 G3 점수 최소, 동점이면 v3 값에 가까운 것",
+      "command": "python data_gen/simulate_interactions.py --temp 0.25 --gamma 0.1 --k-mu 1.55 --k-sigma 1 --cand-pool 12000 --seed 42"
+    },
+    "files": {
+      "profile_regtime.npy": {
+        "sha256": "e3c774b2d12e29fb24ad0f7b73943b63dd1adde12a8c948f01b19478b60412c9",
+        "bytes": 48128,
+        "rows": null
+      },
+      "interactions.csv": {
+        "sha256": "4f50c8213ed16dc958505c5dae70c6828b37a47cb1b508316fefa33915cbd744",
+        "bytes": 6389373,
+        "rows": 199507
+      },
+      "jobs_interactions_long.csv": {
+        "sha256": "e07c5c46ab5844ee7399813cebade9ce71dab61a886d83aa3e137b7b70496d53",
+        "bytes": 3917423,
+        "rows": 199507
+      },
+      "Jobs_split_A.pkl": {
+        "sha256": "c1d3e05f35be8bf02527bb0da036b660f0b36926c3933d2febd7ee4cd0bb215d",
+        "bytes": 5541087,
+        "rows": null
+      },
+      "Jobs_split_B.pkl": {
+        "sha256": "7208dec5b8411f405adee55d895f7f5b285a7ee75387ef6e6e2844f8ae373816",
+        "bytes": 7166687,
+        "rows": null
+      }
+    }
+  }
+}

@@ -52,3 +52,7 @@ data_gen/out/v1_failed/
 .env.*
 !.env.example
 secrets/
+
+# v4 외부 데이터(캐글 등)는 저장소 밖 D:/DSL/_external 에 둔다. 혹시 안에 두더라도 올리지 않는다.
+data_gen/external/
+data_gen/v4/out/

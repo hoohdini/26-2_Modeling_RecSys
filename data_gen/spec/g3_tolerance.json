@@ -1,0 +1,27 @@
+{
+  "_note": "docs/G3_허용구간.md 와 같은 값. [WARN 한계, FAIL 한계]. abs = 절대오차. 2026-09-15 고정. 2026-09-16 캐글 실측 확인 후 창 길이(9일)·밀도(아이템당 평균 건수)·프로필 측에 묶인 항목을 report(보고만)로 바꿈. 판정·캘리브레이션 대상은 밀도 불변 지표인 아이템 Gini 와 상위 50% 점유율 두 개. v4 생성 전.",
+  "default_rel": [
+    0.25,
+    0.5
+  ],
+  "default_abs": [
+    0.05,
+    0.1
+  ],
+  "apps_per_user/p50": "report",
+  "apps_per_user/mean": "report",
+  "apps_per_user/p90": "report",
+  "apps_per_user/share_ge3": "report",
+  "apps_per_job_applied_only/gini": [
+    0.05,
+    0.1
+  ],
+  "apps_per_job_applied_only/top50_share": [
+    0.05,
+    0.1
+  ],
+  "apps_per_job_applied_only/share_le3": "report",
+  "share_jobs_with_zero_apps": "report",
+  "user_active_span_days/p50": "report",
+  "total_years_experience/p50": "report"
+}
