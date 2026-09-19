@@ -101,3 +101,18 @@ verify_embed.py          임베딩 검증
 
 `*_dumper.py` 와 `*_eval_dump.py` 는 **업스트림 저장소에 복사해 넣는 신규 파일**입니다.
 기존 파일은 한 줄도 고치지 않습니다 — 팀 공유 저장소이기 때문입니다.
+
+---
+
+## 반복해서 당한 함정 8가지 (서버에서 돌리기 전에)
+
+1. **`src.inference`(`predict_step`) 산출물로 평가하지 마십시오.** 정답을 가리지 않아 Recall@10 이 0.0660 → 0.0961(+46%)로 부풀려집니다. 올바른 경로는 `code/server/tiger_eval_dump.sh`. 관련 스크립트는 `_archive/` 에 있습니다.
+2. **`src.train train=False` 로 평가하지 마십시오.** `ckpt_path` 를 설정에서 읽지 않아 랜덤 가중치로 평가하고 경고 한 줄만 남깁니다. `src/eval_dump.py` 를 쓰십시오.
+3. **TFRecord 는 split 당 1파일**이라 `num_workers=0` + `timeout=0` + `persistent_workers=false` 를 세트로 줘야 합니다.
+4. **`num_hierarchies` = SID 텐서의 행 수**(4단계 → 5), `vocab_size` = NH × `WIDTH`. `WIDTH` 는 SID 마다 다릅니다 — 텍스트·G-SID 256(VOCAB 1280), CRAB 306(VOCAB 1530). 틀리면 즉시 죽습니다.
+5. **검증 표본을 셔플하지 않으면** 이력이 긴 유저만 뽑혀 검증 지표가 낙관적으로 나옵니다. `VAL_SHUFFLE=true`, 전수 검증 `LIMIT_VAL=1.0`.
+6. **MaskGR 에서는 `+trainer.…` 가 아니라 `++trainer.…`.** 실험 설정이 `gradient_clip_val`·`limit_val_batches` 를 이미 정의하고 있어 `+` 는 "Could not append to config" 로 죽습니다. GRID 는 `+` 가 맞습니다.
+7. **`limit_val_batches` 에 분수를 주지 마십시오.** `IterableDataset` 라 `1.0` 또는 정수만 받습니다.
+8. **MaskGR 은 실패해도 3번 재시도합니다.** 설정 오류는 CPU 스모크(`trainer=cpu` + `++trainer.precision=32`)로 먼저 걸러내십시오.
+
+Temporal 트랙 추가: Split B 의 내부 검증 정답은 자리표시자라 patience 8 조기종료가 13k~24k 스텝에서 이르게 걸립니다(최적 6k~16k). 레시피의 일부이니 바꾸지 말고 보고서에 멈춘 스텝을 적으십시오. 접두사 제약 덤프(`PREFIX=1`)는 일반 덤프(4분)보다 훨씬 오래(30분) 걸립니다.

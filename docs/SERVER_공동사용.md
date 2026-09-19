@@ -215,7 +215,7 @@ $PY -m src.train ...
 
 ## 7. 더 볼 것
 
-- `docs/TEAM_RESULTS.md` — 지금까지 결과 요약, 결정할 것
+- `docs/_archive/TEAM_RESULTS.md` — 지금까지 결과 요약, 결정할 것
 - `docs/HANDOFF_graph_sid.md` — 그래프 SID 담당자용
 - `docs/TOKENIZE_EMBED_SID_REPORT.md` — 상세 경위·전체 수치
 - [`docs/GPU_서버_사용가이드.md`](GPU_서버_사용가이드.md) — 접속 정보 포함 서버 전체 가이드 🔒
