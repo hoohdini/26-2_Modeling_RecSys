@@ -12,7 +12,7 @@ Amazon Beauty 와 자체 구축한 구인구직 데이터셋, 두 도메인에�
 ## 1. 지금까지 확인된 것 (2026-09-19)
 
 판정 규칙은 실행 전에 노션 계획 페이지에 고정했고, 아래는 그 규칙으로 자동 채점한 결과입니다.
-원문은 `results/reports/`, 요약은 `docs/00_발표_가이드.md` 1절.
+원문은 `results/reports/`, 지표 전체 표는 `docs/RESULTS_요약_0920.md`.
 
 | 주장 | 근거 | 판정 |
 |---|---|---|
@@ -47,7 +47,9 @@ Amazon Beauty 와 자체 구축한 구인구직 데이터셋, 두 도메인에�
 
 | 나는… | 읽을 것 |
 |---|---|
+| 결과 수치가 필요하다 | [`docs/RESULTS_요약_0920.md`](docs/RESULTS_요약_0920.md) — 전 실험 지표·판정 한 장 |
 | 발표 자료를 만든다 | [`docs/00_발표_가이드.md`](docs/00_발표_가이드.md) → `SHARE_GSID_결과요약.md` · `JOBS_결과정리.md` |
+| 행사 서비스 백엔드를 만든다 | [`docs/BACKEND_설계계획.md`](docs/BACKEND_설계계획.md) · [`event_demo/README.md`](event_demo/README.md) |
 | Beauty 수치를 확인한다 | [`docs/RESULTS_실험표.md`](docs/RESULTS_실험표.md) (실험표 ①~⑤) · [`results/README.md`](results/README.md) (JSON 색인) |
 | 구인구직 데이터셋을 이해한다 | [`data_gen/README.md`](data_gen/README.md) → [`docs/PREREG_생성데이터셋.md`](docs/PREREG_생성데이터셋.md) → [`docs/DATASET_v4_파이프라인.md`](docs/DATASET_v4_파이프라인.md) |
 | 서버에서 실험을 제출한다 | [`docs/GPU_서버_사용가이드.md`](docs/GPU_서버_사용가이드.md) 🔒 · [`docs/SERVER_공동사용.md`](docs/SERVER_공동사용.md) · 제출 스크립트는 `code/run_*.sh` 머리 주석 |
