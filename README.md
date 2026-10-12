@@ -131,7 +131,7 @@ Amazon Beauty · 구인구직(생성)
 > 학습 파라미터를 하나도 추가하지 않고 **주소만 바꿔서** 콜드 아이템 recall 을 끌어올릴 수 있다.
 > 다만 한 번도 등장하지 않은 아이템(zero-shot)은 주소 할당 단계에서 막히며, 이는 다음 과제로 남는다.
 
-자세한 수치: [`docs/RESULTS_실험표.md`](docs/RESULTS_실험표.md) · [`docs/SHARE_GSID_결과요약.md`](docs/SHARE_GSID_결과요약.md) · [`docs/JOBS_결과정리.md`](docs/JOBS_결과정리.md) · [`results/reports/`](results/reports/)
+자세한 수치: [`docs/RESULTS_요약_0920.md`](docs/RESULTS_요약_0920.md) · [`docs/RESULTS_실험표.md`](docs/RESULTS_실험표.md) · [`docs/SHARE_GSID_결과요약.md`](docs/SHARE_GSID_결과요약.md) · [`docs/JOBS_결과정리.md`](docs/JOBS_결과정리.md) · [`results/reports/`](results/reports/)
 
 ---
 
@@ -227,7 +227,9 @@ G-SID 배치는 무작위 300회 대비 z = 14.9 로 뚜렷하게 뭉쳤고, 프
 
 | 나는… | 읽을 것 |
 |---|---|
+| 결과 수치를 한 장으로 본다 | [`docs/RESULTS_요약_0920.md`](docs/RESULTS_요약_0920.md) — 전 실험 지표·판정 한 장 |
 | 결과 수치를 확인한다 | [`docs/RESULTS_실험표.md`](docs/RESULTS_실험표.md) · [`results/README.md`](results/README.md) |
+| 행사 서비스 백엔드를 만든다 | [`docs/BACKEND_설계계획.md`](docs/BACKEND_설계계획.md) · [`event_demo/README.md`](event_demo/README.md) |
 | 그래프 SID 를 만든다 | [`docs/HANDOFF_graph_sid.md`](docs/HANDOFF_graph_sid.md) · [`csv_export/sid/gstar_noTau_k0_b10/README.md`](csv_export/sid/gstar_noTau_k0_b10/README.md) (승자 수식) |
 | 구인구직 데이터셋을 이해한다 | [`data_gen/README.md`](data_gen/README.md) → [`docs/PREREG_생성데이터셋.md`](docs/PREREG_생성데이터셋.md) → [`docs/DATASET_v4_파이프라인.md`](docs/DATASET_v4_파이프라인.md) |
 | 코드를 고친다 | [`code/README.md`](code/README.md) — 의존 관계 · 실행 순서 · 반복해서 당한 함정 |
